@@ -1,4 +1,5 @@
-import mysql from "mysql2"
+import mysql from "mysql2";
+import fs from "fs";
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -8,5 +9,8 @@ const connection = mysql.createConnection({
     password: "qwer!234",
     multipleStatements: true
 })
+if(process.env.MYSQL_CERT) {
+    dbconfig.ssl = { cs: fs.readFileSync("DigiCertGlobalRootCA.crt.pem") };
+}
 
 export default connection
