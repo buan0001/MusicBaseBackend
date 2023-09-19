@@ -31,13 +31,13 @@ albumsRouter.get("/", (request, response) => {
 albumsRouter.get("/:id", (request, response) => {
   const id = request.params.id;
 
-  const queryString = /*sql*/ `
+  const query = /*sql*/ `
         SELECT DISTINCT albums.*,
-        tracks.title as trackTitle,
-        tracks.id as trackId,
-        tracks.durationSeconds trackLengthSEC,
-        artists.name as artistName,
-        artists.id as artistId
+            tracks.title as trackTitle,
+            tracks.id as trackId,
+            tracks.durationSeconds trackLengthSEC,
+            artists.name as artistName,
+            artists.id as artistId
         FROM albums
         JOIN albums_tracks ON albums.id = albums_tracks.albums_id
         JOIN tracks ON albums_tracks.track_id = tracks.id
@@ -49,7 +49,7 @@ albumsRouter.get("/:id", (request, response) => {
     `;
   const values = [id];
 
-  connection.query(queryString, values, (error, results) => {
+  connection.query(query, values, (error, results) => {
     if (error) {
       console.log(error);
     } else {
@@ -58,14 +58,14 @@ albumsRouter.get("/:id", (request, response) => {
         const albumWithSongs = {
           id: album.id,
           title: album.title,
-          releaseDate: album.releaseYear,
+          releaseYear: album.releaseYear,
           artist: album.artistName,
           artistID: album.artistId,
-          songs: results.map((song) => {
+          tracks: results.map((track) => {
             return {
-              id: song.trackId,
-              title: song.trackTitle,
-              length: song.trackLengthSEC
+              id: track.trackId,
+              title: track.trackTitle,
+              length: track.trackLengthSEC
             };
           })
         };
