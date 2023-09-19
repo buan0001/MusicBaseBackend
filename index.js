@@ -1,7 +1,6 @@
 import express from "express";
 import fs from "fs/promises";
 import cors from "cors";
-import connection from "./database.js";
 import { getArtists, getArtistsID, createArtist, updateArtist, deleteArtist } from "./controllers.js";
 
 const app = express();

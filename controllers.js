@@ -1,3 +1,5 @@
+import connection from "./database.js";
+
 async function getArtists(request, response) {
   console.log("test");
   connection.query("SELECT * FROM `users`", (err, results, fields) => {
