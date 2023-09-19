@@ -64,7 +64,6 @@ artistsRouter.put("/:id", (request, response) => {
 });
 
 // DELETE artist
-app.delete("/artists/:id", deleteArtist);
 artistsRouter.delete("/:id", (request, response) => {
   const id = request.params.id; // tager id fra URL'en
   const query = "DELETE from artists WHERE id = ?";
