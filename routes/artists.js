@@ -4,9 +4,10 @@ import connection from "../database.js";
 const artistsRouter = Router();
 
 // READ all artists
-artistsRouter.get("/", (request, response) => {
-  const query = /*sql*/ `
-    SELECT artists.artist_id, artists.artist_name, genres.genre_name FROM artists 
+artistsRouter.get("/artists", (request, response) => {
+  const query = 
+    /*sql*/
+    `SELECT artists.artist_id, artists.artist_name, genres.genre_name FROM artists 
     JOIN artist_genre ON artists.artist_id = artist_genre.artist_id
     JOIN genres ON artist_genre.genre_id = genres.genre_id;
     `;
@@ -20,19 +21,19 @@ artistsRouter.get("/", (request, response) => {
 });
 
 // READ one artist
-artistsRouter.get("/:id", (request, response) => {
-  const id = request.params.id; // tager id fra URL'en
-  const query = "SELECT * FROM artists WHERE id = ?";
-  const values = [id];
+// artistsRouter.get("/:id", (request, response) => {
+//   const id = request.params.id; // tager id fra URL'en
+//   const query = "SELECT * FROM artists WHERE id = ?";
+//   const values = [id];
 
-  connection.query(query, values, (error, results, fields) => {
-    if (error) {
-      console.log(error);
-    } else {
-      response.json(results[0]);
-    }
-  });
-});
+//   connection.query(query, values, (error, results, fields) => {
+//     if (error) {
+//       console.log(error);
+//     } else {
+//       response.json(results[0]);
+//     }
+//   });
+// });
 
 /* INDSÆT KORREKT INFORMATION DER SKAL DISPLAYES FOR ARTIST, DVS. IKKE MAIL & TITLE */
 // CREATE artist
