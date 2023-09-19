@@ -57,3 +57,4 @@
 //     FOREIGN KEY (album_id)
 //     FOREIGN KEY (artist_id)
 // );
+
