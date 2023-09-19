@@ -4,7 +4,7 @@ import connection from "../database.js";
 const artistsRouter = Router();
 
 // READ all artists
-artistsRouter.get("/artists", (request, response) => {
+artistsRouter.get("/", (request, response) => {
   const query = 
     /*sql*/
     `SELECT artists.artist_id, artists.artist_name, genres.genre_name FROM artists 

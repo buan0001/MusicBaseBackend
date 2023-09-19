@@ -3,7 +3,7 @@ import connection from "../database.js";
 
 const tracksRouter = Router();
 
-tracksRouter.get("/tracks", (request, response) => {
+tracksRouter.get("/", (request, response) => {
   const query =
     /*sql*/
     `SELECT  

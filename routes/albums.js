@@ -3,7 +3,7 @@ import connection from "../database.js";
 
 const albumsRouter = Router();
 
-albumsRouter.get("/albums", (request, response) => {
+albumsRouter.get("/", (request, response) => {
   const query =
     /*sql*/
     `SELECT 
