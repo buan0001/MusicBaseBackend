@@ -78,8 +78,6 @@ albumsRouter.get("/:id", (request, response) => {
   });
 });
 
-export default albumsRouter;
-
 // READ all albums
 albumsRouter.get("/", (request, response) => {
   const query = /*sql*/ `
@@ -155,13 +153,12 @@ albumsRouter.get("/:id", (request, response) => {
   });
 });
 
-export default albumsRouter;
 
 albumsRouter.get("/", (request, response) => {
   const query =
-    /*sql*/
-    `SELECT 
-    FROM albums`;
+  /*sql*/
+  `SELECT 
+  FROM albums`;
   connection.query(query, (error, results, fields) => {
     if (error) {
       console.log(error);
@@ -170,3 +167,5 @@ albumsRouter.get("/", (request, response) => {
     }
   });
 });
+
+export default albumsRouter;
