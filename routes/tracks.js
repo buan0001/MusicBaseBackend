@@ -3,15 +3,16 @@ import connection from "../database.js";
 
 const tracksRouter = Router();
 
-export default tracksRouter;
-
-export default tracksRouter;
-
 tracksRouter.get("/", (request, response) => {
   const query =
     /*sql*/
-    `SELECT  
-    FROM tracks`;
+    `
+    -- SELECT tracks*, genres.genreName, labels.labelName
+    -- FROM tracks
+    -- JOIN genres ON tracks.genreId = genres.id
+    -- JOIN labels ON tracks.labelId = labels.id;
+    SELECT * FROM tracks;
+    `;
   connection.query(query, (error, results, fields) => {
     if (error) {
       console.log(error);
@@ -20,3 +21,5 @@ tracksRouter.get("/", (request, response) => {
     }
   });
 });
+
+export default tracksRouter;
