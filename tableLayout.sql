@@ -115,6 +115,20 @@ VALUES (1,1),
 (4,8),
 (4,9);
 
+INSERT INTO albums_tracks (albums_id, track_id)
+VALUES (1,1),
+(2,2),
+(2,3),
+(3,4),
+(3,5),
+(4,6),
+(5,7),
+(6,8),
+(6,9),
+(7,10),
+(8,11),
+(9,12);
+
 SELECT artists.name, artists.birthdate, tracks.title, tracks.durationSeconds FROM artists
 JOIN artists_tracks ON artists.id = artists_tracks.artist_id
 JOIN tracks ON artists_tracks.track_id = tracks.id;
