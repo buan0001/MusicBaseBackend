@@ -1,33 +1,22 @@
 import express from "express";
-import fs from "fs/promises";
 import cors from "cors";
-import { getArtists, getArtistsID, createArtist, updateArtist, deleteArtist } from "./controllers.js";
+import artistsRouter from "./routes/artists.js";
+import tracksRouter from "./routes/tracks.js";
+import albumsRouter from "./routes/albums.js";
 
 const app = express();
 const port = 3333;
 
 app.use(express.json());
 app.use(cors());
+app.use("/artists", artistsRouter);
+app.use("/tracks", tracksRouter);
+app.use("/albums", albumsRouter);
 
 app.listen(port, () => {
-  console.log(`App listening on http://localhost:${port}`);
+  console.log(`App listening on port ${port}, http://localhost:${port}`);
 });
 
 app.get("/", (request, response) => {
   response.send("Node.js artists REST API 🎉");
 });
-
-// READ all artists
-app.get("/artists", getArtists);
-
-// READ one user
-app.get("/artists/:id", getArtistsID);
-
-// CREATE user
-app.post("/artists", createArtist);
-
-// UPDATE user
-app.put("/artists/:id", updateArtist);
-
-// DELETE user
-app.delete("/artists/:id", deleteArtist);
