@@ -3,7 +3,6 @@ import mysql from "mysql2";
 import "dotenv/config";
 import fs from "fs";
 
-
 // Using variables from .env file and creates connection to database
 const connection = mysql.createConnection({
   host: process.env.MYSQL_HOST,
@@ -14,8 +13,8 @@ const connection = mysql.createConnection({
   multipleStatements: true,
 });
 
-if(process.env.MYSQL_CERT) {
-    dbconfig.ssl = { cs: fs.readFileSync("DigiCertGlobalRootCA.crt.pem") };
+if (process.env.MYSQL_CERT) {
+  dbconfig.ssl = { cs: fs.readFileSync("DigiCertGlobalRootCA.crt.pem") };
 }
 
 // Export Database Connection
