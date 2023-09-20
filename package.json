@@ -6,7 +6,7 @@
     "mysql2": "^3.6.1"
   },
   "name": "musicbasebackend",
-  "description": "",
+  "description": "MusicBase er en fullstack web-applikation, som kan bruges som opslagsværk over musik. Applikationen giver adgang til en database, som indeholder kunstnere (artists), udgivelser (albums) og enkelte numre (tracks).",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
