@@ -76,8 +76,6 @@ albumsRouter.get("/:id", (request, response) => {
   });
 });
 
-export default albumsRouter;
-
 //  const query = /*sql*/ `
 //   -- se både artists + tracks i albums
 //     SELECT DISTINCT albums.*,
@@ -166,7 +164,6 @@ albumsRouter.get("/:id", (request, response) => {
   });
 });
 
-export default albumsRouter;
 
 //  const query = /*sql*/ `
 //   -- se både artists + tracks i albums
