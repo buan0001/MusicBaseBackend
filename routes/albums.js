@@ -4,7 +4,7 @@ import connection from "../database.js";
 const albumsRouter = Router();
 
 // READ all albums
-albumsRouter.get("/", (request, response) => {
+albumsRouter.get("/", async (request, response) => {
   const query = /*sql*/ `
      -- se albums med artist navn UDEN tracks
     SELECT DISTINCT albums.*,
@@ -16,16 +16,11 @@ albumsRouter.get("/", (request, response) => {
     
     `;
 
-  connection.query(query, (error, results, fields) => {
-    if (error) {
-      console.log(error);
-    } else {
-      response.json(results);
-    }
-  });
+  const [results] = await connection.execute(query);
+  response.json(results);
 });
 
-albumsRouter.get("/:id", (request, response) => {
+albumsRouter.get("/:id", async (request, response) => {
   const id = request.params.id;
 
   const query = /*sql*/ `
@@ -46,34 +41,30 @@ albumsRouter.get("/:id", (request, response) => {
     `;
   const values = [id];
 
-  connection.query(query, values, (error, results) => {
-    if (error) {
-      console.log(error);
-    } else {
-      if (results[0]) {
-        const album = results[0];
-        console.log(results);
-        const albumWithSongs = {
-          id: album.id,
-          title: album.title,
-          releaseYear: album.releaseYear,
-          artist: album.artistName,
-          artistID: album.artistId,
-          tracks: results.map((track) => {
-            return {
-              id: track.trackId,
-              title: track.trackTitle,
-              length: track.trackLengthSEC,
-            };
-          }),
-        };
+  const [results] = await connection.execute(query, values);
 
-        response.json(albumWithSongs);
-      } else {
-        response.json({ message: "No album found" });
-      }
-    }
-  });
+  if (results[0]) {
+    const album = results[0];
+    console.log(results);
+    const albumWithSongs = {
+      id: album.id,
+      title: album.title,
+      releaseYear: album.releaseYear,
+      artist: album.artistName,
+      artistID: album.artistId,
+      tracks: results.map((track) => {
+        return {
+          id: track.trackId,
+          title: track.trackTitle,
+          length: track.trackLengthSEC,
+        };
+      }),
+    };
+
+    response.json(albumWithSongs);
+  } else {
+    response.json({ message: "No album found" });
+  }
 });
 
 export default albumsRouter;
