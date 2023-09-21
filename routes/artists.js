@@ -6,12 +6,9 @@ const artistsRouter = Router();
 // READ all artists
 artistsRouter.get("/", async (request, response) => {
   const query = /*sql*/ `
-    -- SELECT artists.artist_id, artists.artist_name, genres.genre_name FROM artists 
-   -- JOIN artist_genre ON artists.artist_id = artist_genre.artist_id
-   -- JOIN genres ON artist_genre.genre_id = genres.genre_id;
-   SELECT * FROM artists;
+   SELECT * FROM artists
+   ORDER BY name;
     `;
-
   const [results] = await connection.execute(query, values);
   response.json(results);
 });
@@ -25,7 +22,6 @@ artistsRouter.get("/search", async (request, response) => {
     WHERE name LIKE ?
     ORDER BY name`;
   const values = [`%${searchString}%`];
-
   const [results] = await connection.execute(query, values);
   response.json(results);
 });
