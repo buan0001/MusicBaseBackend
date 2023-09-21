@@ -1,5 +1,6 @@
-import { Router } from "express";
+import { Router, response } from "express";
 import connection from "../database.js";
+import { tryExcecute } from "../helpers.js";
 
 const tracksRouter = Router();
 
@@ -16,8 +17,8 @@ tracksRouter.get("/", async (request, response) => {
     INNER JOIN artists ON artists_tracks.artist_id = artists.id
     ORDER BY artists.id ASC;
     `;
-  const [results] = await connection.execute(query);
-  response.json(results);
+//   const [results] = await connection.execute(query);
+  response.json(await tryExcecute(query));
 });
 
 // Search after track title
@@ -38,8 +39,8 @@ WHERE tracks.title LIKE ?;
     `;
 
   const values = [`%${query}%`];
-  const [results] = await connection.execute(queryString, values);
-  response.json(results);
+  
+  response.json(await tryExcecute(queryString,values));
 });
 
 // Get a single track
@@ -59,8 +60,8 @@ tracksRouter.get("/:id", async (request, response) => {
             WHERE tracks.id = ?;
     `;
   const values = [id];
-  const [results] = await connection.execute(queryString, values);
-  response.json(results);
+  
+  response.json(await tryExcecute(queryString, values));
 });
 
 tracksRouter.post("/", async (request, response) => {
@@ -80,12 +81,18 @@ tracksRouter.post("/", async (request, response) => {
     INSERT INTO artists_tracks (artist_id, track_id) VALUES(?, ?)`;
   const artistTrackValues = [track.artistId, newTrackId];
 
-  const [artistTrackResult] = await connection.execute(artistTrackQuery, artistTrackValues);
-  console.log(artistTrackResult);
+  // Måske også post ind i album_tracks junctiontable
 
-// Måske også post ind i album_tracks junctiontable
+  response.json(await tryExcecute(artistTrackQuery, artistTrackValues));
+//   response.json({ message: "New track created!" });
+});
 
-  response.json({ message: "New track created!" });
+tracksRouter.put("/:id", async (request, response) => {
+  const id = request.params.id;
+  const track = request.body;
+  const query = "UPDATE tracks SET title = ?, durationSeconds = ? WHERE id = ?";
+  const values = [track.name, track.birthdate, id];
+  response.json(await tryExcecute(query,values))
 });
 
 export default tracksRouter;

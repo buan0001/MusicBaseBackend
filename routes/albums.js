@@ -145,7 +145,20 @@ albumsRouter.put("/:id", async (request, response) => {
   }
 });
 
-export default albumsRouter;
+albumsRouter.put("/:id", async (request, response) => {
+  console.log("albums put");
+  const id = request.params.id; // tager id fra URL'en
+  const album = request.body;
+  const query = "UPDATE albums SET title = ?, releaseYear = ? WHERE id = ?";
+  const values = [album.title, album.releaseYear, id];
+  try {
+    const [results] = await connection.execute(query, values);
+    response.json(results);
+  } catch (err) {
+    response.json({ message: "Couldn't update Album" });
+  }
+});
+
 
 //  const query = /*sql*/ `
 //   -- se både artists + tracks i albums
@@ -161,3 +174,5 @@ export default albumsRouter;
 //     JOIN artists ON artists_albums.artist_id = artists.id
 //     ORDER BY albums.id;
 //     `;
+
+export default albumsRouter;
