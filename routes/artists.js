@@ -80,9 +80,10 @@ artistsRouter.put("/:id", async (request, response) => {
   const artist = request.body;
   const query = "UPDATE artists SET name = ?, birthdate = ? WHERE id = ?";
   const values = [artist.name, artist.birthdate, id];
-
-  const [results] = await connection.execute(query, values);
-  response.json(results);
+  try
+  {const [results] = await connection.execute(query, values);
+  response.json(results);}
+  catch (err){response.json(err)}
 });
 
 // DELETE artist
