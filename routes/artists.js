@@ -5,15 +5,13 @@ const artistsRouter = Router();
 
 // READ all artists
 artistsRouter.get("/", (request, response) => {
-  const query = /*sql*/ `
-    -- SELECT artists.artist_id, artists.artist_name, genres.genre_name FROM artists 
-   -- JOIN artist_genre ON artists.artist_id = artist_genre.artist_id
-   -- JOIN genres ON artist_genre.genre_id = genres.genre_id;
-   SELECT * FROM artists;
-    `;
-  connection.query(query, (error, results, fields) => {
+  const queryString = /*sql*/ `
+        SELECT * FROM artists 
+        ORDER BY name;
+        `;
+  connection.query(queryString, (error, results) => {
     if (error) {
-      console.log(error);
+      console.error(error);
     } else {
       response.json(results);
     }
@@ -21,19 +19,41 @@ artistsRouter.get("/", (request, response) => {
 });
 
 // READ one artist
-// artistsRouter.get("/:id", (request, response) => {
-//   const id = request.params.id; // tager id fra URL'en
-//   const query = "SELECT * FROM artists WHERE id = ?";
-//   const values = [id];
+artistsRouter.get("/:id", (request, response) => {
+  const id = request.params.id;
+  const queryString = /*sql*/ `
+    SELECT * FROM artists 
+    WHERE id = ?;
+    `;
+    
+    connection.query(queryString, [id], (error, results) => {
+    if (error) {
+      console.error(error);
+    } else {
+      response.json(results);
+    }
+  });
+});
 
-//   connection.query(query, values, (error, results, fields) => {
+//  SEARCH 1 ARTIST SPECIFIKT??
+// artistsRouter.get("/search", (request, response) => {
+//   console.log("searching for artist");
+//   const query = request.query.q;
+//   console.log(query);
+
+//   const queryString = /*sql*/ `
+//     SELECT * FROM artists WHERE name LIKE ? ORDER BY name;`;
+//   const values = [`%${query}%`];
+//   connection.query(queryString, values, (error, results) => {
 //     if (error) {
-//       console.log(error);
+//       console.error(error);
+//       response.status(500).json({ message: "Error occured" });
 //     } else {
-//       response.json(results[0]);
+//       response.json(results);
 //     }
 //   });
 // });
+
 
 /* INDSÆT KORREKT INFORMATION DER SKAL DISPLAYES FOR ARTIST, DVS. IKKE MAIL & TITLE */
 // CREATE artist

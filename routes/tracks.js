@@ -4,20 +4,17 @@ import connection from "../database.js";
 const tracksRouter = Router();
 
 tracksRouter.get("/", (request, response) => {
+  console.log("are u workin?");
   const query =
     /*sql*/
     `
     SELECT DISTINCT tracks.*,
-    album.name as albumName,
-    album.id as albumID,
-    artists.name as ArtistName,
-    artists.id as ArtistId 
-    FROM tracks;
-    JOIN albums_tracks ON tracks.id = albums_tracks.track_id
-    JOIN albums ON albums_tracks.albums_id = albums.id
-    JOIN artists_albums ON albums.id = artists_albums.album_id
-    JOIN artists ON artists_albums.artist_id = artists.id
-    ORDER BY track.id
+       artists.name as ArtistName,
+       artists.id as ArtistId
+    FROM tracks
+    INNER JOIN artists_tracks ON tracks.id = artists_tracks.track_id
+    INNER JOIN artists ON artists_tracks.artist_id = artists.id
+    ORDER BY tracks.title;
     `;
   connection.query(query, (error, results, fields) => {
     if (error) {
@@ -28,18 +25,41 @@ tracksRouter.get("/", (request, response) => {
   });
 });
 
+// GET A SINGLE TRACK BY ID
+
+tracksRouter.get("/:id", (req, res) => {
+  const id = req.params.id;
+  const queryString = /* sql */ `
+        SELECT tracks.*,
+            artists.name AS artistName,
+            artists.id AS artistId
+            FROM tracks
+            INNER JOIN artists_tracks ON tracks.id = artists_tracks.trackID
+            INNER JOIN artists ON artists_tracks.artistID = artists.id
+            WHERE tracks.id = ?;
+    `;
+  connection.query(queryString, [id], (error, result) => {
+    if (error) {
+      console.error(error);
+    } else {
+      res.json(result);
+    }
+  });
+});
+
 export default tracksRouter;
 
-/*sql*/ `-- SELECT tracks*, genres.genreName, labels.labelName
-    -- FROM tracks
-    -- JOIN genres ON tracks.genreId = genres.id
-    -- JOIN labels ON tracks.labelId = labels.id;
-
--- skal ha testet disse
-
-    --SELECT a.artist_id, a.artist_name, g.genre_name, l.labelName
-    --FROM artists a
-    --JOIN artist_genre ag ON a.artist_id = ag.artist_id
-    --JOIN genres g ON ag.genre_id = g.id
-    --LEFT JOIN artist_label al ON a.artist_id = al.artist_id
-    --LEFT JOIN labels l ON al.label_id = l.id; `
+// tracksRouter.get("/search", (request, response) => {
+// 	const query = request.query.q;
+// 	const queryString = /*sql*/ `
+//     SELECT * FROM tracks WHERE name LIKE ? ORDER BY name;`;
+// 	const values = [`%${query}%`];
+// 	connection.query(queryString, values, (error, results) => {
+// 		if (error) {
+// 			console.error(error);
+// 			response.status(500).json({ message: "Error occured" });
+// 		} else {
+// 			response.json(results);
+// 		}
+// 	});
+// });
