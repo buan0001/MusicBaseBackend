@@ -60,12 +60,12 @@ CREATE TABLE artists_albums(
 
 
 INSERT INTO artists (name, birthdate)
-values ('Eminem', '1991-02-01'),
+VALUES ('Eminem', '1991-02-01'),
        ('Doja Cat', '1995-10-21'),
-       ('Linkin Park', '1996-01-01')
+       ('Linkin Park', '1996-01-01'),
        ('Rihanna', '1986-03-04'),
        ('Chet Baker', '1929-12-23'),
-       ('Drake', '1986-10-24')
+       ('Drake', '1986-10-24'),
 
        ('Mr. world wide', '1981-09-11'),
        ('Netsky', '1990-08-08');
@@ -115,12 +115,12 @@ VALUES ('Rihanna album 1', 2014),
        ('It Could Happen to You', 1958),
        ('Chet', 1959),
        ('Chet Baker in New York', 1959),
-       ("Let's Get Lost", 1989),
+       ('Let''s Get Lost', 1989),
        ('My Funny Valentine: The Complete Concert', 1994),
        ('No Problem', 1980),
        ('In New York', 1958),
        ('Playboys', 1956),
-       ("Sings and Plays from the Film Let's Get Lost", 1989),
+       ('Sings and Plays from the Film Let''s Get Lost', 1989),
 
        -- Drake
        ('Thank Me Later', 2010),
@@ -146,7 +146,7 @@ VALUES
 ('313', 292), 
 ('Open Mic', 159), 
 ('Never 2 Far', 328), 
-('Searchin', 303) 
+('Searchin', 303), 
 
 -- EMINEM, The Slim Shady LP (1999)
 ('Public Service Announcement', 34),
