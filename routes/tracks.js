@@ -14,7 +14,7 @@ tracksRouter.get("/", (request, response) => {
     FROM tracks
     INNER JOIN artists_tracks ON tracks.id = artists_tracks.track_id
     INNER JOIN artists ON artists_tracks.artist_id = artists.id
-    ORDER BY tracks.title;
+    ORDER BY artists.id ASC;
     `;
   connection.query(query, (error, results, fields) => {
     if (error) {
