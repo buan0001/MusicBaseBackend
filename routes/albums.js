@@ -89,7 +89,7 @@ albumsRouter.post("/", async (request, response) => {
   const album = request.body;
 
   const query = /*sql*/ `
-     -- opret albums
+     -- opret album
      INSERT INTO albums (title, releaseYear)
      VALUES (?, ?)
     `;
@@ -99,7 +99,7 @@ albumsRouter.post("/", async (request, response) => {
   const newAlbumId = results.insertId;
 
   const joinAlbumArtistQuery = /*sql*/ `
-     -- opret albums
+     -- opret join mellem album og artist
      INSERT INTO artists_albums (artist_id, album_id)
      VALUES (?, ?)
     `;
@@ -108,7 +108,7 @@ albumsRouter.post("/", async (request, response) => {
   const artistAlbumResults = await connection.execute(joinAlbumArtistQuery, artistAlbumValues);
   console.log(artistAlbumResults);
 
-  response.json({ message: "New song created" });
+  response.json({ message: "New album created" });
 });
 
 export default albumsRouter;
