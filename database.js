@@ -13,7 +13,7 @@ const connection = mysql.createConnection({
 });
 
 // if(process.env.MYSQL_CERT) {
-//     dbconfig.ssl = { cs: fs.readFileSync("DigiCertGlobalRootCA.crt.pem") };
+//     dbconfig.ssl = { ca: fs.readFileSync("") };
 // }
 
 // Export Database Connection
