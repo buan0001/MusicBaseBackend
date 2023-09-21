@@ -33,7 +33,12 @@ albumsRouter.get("/search", async (request, response) => {
   const values = [`%${query}%`];
   console.log(queryString);
   const [results] = await connection.execute(queryString, values);
-  response.json(results);
+  // response.json(results);
+  if (results.length) {
+    response.json(results);
+  } else {
+    response.json({ message: "No album found" });
+  }
 });
 
 albumsRouter.get("/:id", async (request, response) => {
