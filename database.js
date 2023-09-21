@@ -1,5 +1,4 @@
-import mysql from "mysql2";
-
+import mysql from "mysql2/promise";
 import "dotenv/config";
 import fs from "fs";
 
@@ -10,12 +9,12 @@ const connection = mysql.createConnection({
   port: process.env.MYSQL_PORT,
   database: process.env.MYSQL_DATABASE,
   password: process.env.MYSQL_PASSWORD,
-  multipleStatements: true,
+  multipleStatements: true
 });
 
-if (process.env.MYSQL_CERT) {
-  dbconfig.ssl = { cs: fs.readFileSync("DigiCertGlobalRootCA.crt.pem") };
-}
+// if(process.env.MYSQL_CERT) {
+//     dbconfig.ssl = { ca: fs.readFileSync("") };
+// }
 
 // Export Database Connection
 export default connection;

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import connection from "../database.js";
 
+
 const artistsRouter = Router();
 
 // READ all artists
@@ -9,7 +10,10 @@ artistsRouter.get("/", (request, response) => {
   // JOIN artist_genre ON artists.artist_id = artist_genre.artist_id
   // JOIN genres ON artist_genre.genre_id = genres.genre_id;
   const query = /*sql*/ `
-  SELECT * from artists
+    -- SELECT artists.artist_id, artists.artist_name, genres.genre_name FROM artists 
+   -- JOIN artist_genre ON artists.artist_id = artist_genre.artist_id
+   -- JOIN genres ON artist_genre.genre_id = genres.genre_id;
+   SELECT * FROM artists;
     `;
   connection.query(query, (error, results, fields) => {
     if (error) {
@@ -39,8 +43,8 @@ artistsRouter.get("/:id", (request, response) => {
 // CREATE artist
 artistsRouter.post("/", (request, response) => {
   const artist = request.body;
-  const query = "INSERT INTO artists (name, mail, title, image) VALUES (?, ?, ?, ?)";
-  const values = [artist.name, artist.mail, artist.title, artist.image];
+  const query = "INSERT INTO artists (name, birthdate) VALUES (?, ?)";
+  const values = [artist.name, artist.birthdate];
 
   connection.query(query, values, (error, results, fields) => {
     if (error) {
@@ -55,9 +59,9 @@ artistsRouter.post("/", (request, response) => {
 // UPDATE artist
 artistsRouter.put("/:id", (request, response) => {
   const id = request.params.id; // tager id fra URL'en
-  const body = request.body;
-  const query = "UPDATE artists SET name = ?, mail = ?, title = ?, image = ? WHERE id = ?";
-  const values = [body.name, body.mail, body.title, body.image, id];
+  const artist = request.body;
+  const query = "UPDATE artists SET name = ?, birthdate = ? WHERE id = ?";
+  const values = [artist.name, artist.birthdate, id];
 
   connection.query(query, values, (error, results, fields) => {
     if (error) {
@@ -69,18 +73,22 @@ artistsRouter.put("/:id", (request, response) => {
 });
 
 // DELETE artist
-artistsRouter.delete("/:id", (request, response) => {
+artistsRouter.delete("/:id", async (request, response) => {
   const id = request.params.id; // tager id fra URL'en
-  const query = "DELETE from artists WHERE id = ?";
+  const query = `SELECT from artists_tracks WHERE artist_id = ?;`;
   const values = [id];
 
-  connection.query(query, values, (error, results, fields) => {
-    if (error) {
-      response.json(error);
-    } else {
-      response.json(results);
-    }
-  });
+  // DELETE from artists_tracks WHERE artist_id = ?;
+  // DELETE from ARTISTS
+  const [results] = await connection.execute(query, values)
+  console.log(results);
+  // connection.query(query, values, (error, results, fields) => {
+  //   if (error) {
+  //     response.json(error);
+  //   } else {
+  //     response.json(results);
+  //   }
+  // });
 });
 
 export default artistsRouter;
