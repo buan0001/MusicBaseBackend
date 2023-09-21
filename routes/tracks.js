@@ -16,12 +16,12 @@ tracksRouter.get("/", async (request, response) => {
     INNER JOIN artists ON artists_tracks.artist_id = artists.id
     ORDER BY artists.id ASC;
     `;
-    const [results] = await connection.execute(query)
-    response.json(results);
+  const [results] = await connection.execute(query);
+  response.json(results);
 });
 
 // Search after track title
-tracksRouter.get("/search", async(request, response) => {
+tracksRouter.get("/search", async (request, response) => {
   const query = request.query.q;
   const queryString = /*sql*/ `
     SELECT DISTINCT tracks.*,
@@ -36,13 +36,14 @@ INNER JOIN albums_tracks ON tracks.id = albums_tracks.track_id
 INNER JOIN albums ON albums_tracks.albums_id = albums.id
 WHERE tracks.title LIKE ?;
     `;
+
   const values = [`%${query}%`];
   const [results] = await connection.execute(queryString, values);
   response.json(results);
 });
 
 // Get a single track
-tracksRouter.get("/:id", async(request, response) => {
+tracksRouter.get("/:id", async (request, response) => {
   const id = request.params.id;
   const queryString = /* sql */ `
         SELECT tracks.*,
@@ -79,10 +80,7 @@ tracksRouter.post("/", async (request, response) => {
     INSERT INTO artists_tracks (artist_id, track_id) VALUES(?, ?)`;
   const artistTrackValues = [track.artistId, newTrackId];
 
-  const [artistTrackResult] = await connection.execute(
-    artistTrackQuery,
-    artistTrackValues
-  );
+  const [artistTrackResult] = await connection.execute(artistTrackQuery, artistTrackValues);
   console.log(artistTrackResult);
 
   response.json({ message: "New track created!" });
