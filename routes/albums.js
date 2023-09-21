@@ -5,6 +5,7 @@ const albumsRouter = Router();
 
 // READ all albums
 albumsRouter.get("/", (request, response) => {
+  console.log("all albums get");
   const query = /*sql*/ `
      -- se albums med artist navn UDEN tracks
     SELECT DISTINCT albums.*,
@@ -25,7 +26,28 @@ albumsRouter.get("/", (request, response) => {
   });
 });
 
+// GET Endpoint "/albums/search?q=something" - get all albums
+albumsRouter.get("/search", (request, response) => {
+  console.log("search albums get");
+  const query = request.query.q;
+  const queryString = /*sql*/ `
+    SELECT *
+    FROM albums
+    WHERE title LIKE ?
+    ORDER BY title;`;
+  const values = [`%${query}%`];
+  console.log(queryString);
+  connection.query(queryString, values, (error, results) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
+});
+
 albumsRouter.get("/:id", (request, response) => {
+  console.log("one albums get");
   const id = request.params.id;
 
   const query = /*sql*/ `
