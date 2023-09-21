@@ -4,7 +4,6 @@ import connection from "../database.js";
 const tracksRouter = Router();
 
 tracksRouter.get("/", (request, response) => {
-  console.log("are u workin?");
   const query =
     /*sql*/
     `
