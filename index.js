@@ -21,3 +21,21 @@ app.listen(port, () => {
 app.get("/", (request, response) => {
   response.send("MusicBase rest api 🎉");
 });
+
+app.use("/all", async (req, res) => {
+  artistsRouter.get("/search", (request, response) => {
+    const query = request.query.q;
+    console.log(query);
+
+    const queryString = `
+       SELECT  artists.id, artists.name, artists.birthdate as time FROM artists
+        where artists.name like '%n%'
+        UNION
+        SELECT  * FROM tracks
+        where tracks.title like '%n%'
+    UNION
+        SELECT  * FROM albums
+        where albums.title like '%n%';`;
+    const values = [`%${query}%`];
+  });
+});
