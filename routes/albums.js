@@ -21,7 +21,7 @@ albumsRouter.get("/", async (request, response) => {
   response.json(results);
 });
 
-// GET Endpoint "/albums/search?q=something" - get all albums
+// GET Endpoint "/albums/search?q=something" 
 albumsRouter.get("/search", async (request, response) => {
   console.log("search albums get");
   const query = request.query.q;
