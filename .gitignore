@@ -2,4 +2,3 @@ node_modules
 .env 
 #macOS
 .env
-DigiCertGlobalRootCA.crt.pem
