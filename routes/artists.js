@@ -87,36 +87,41 @@ artistsRouter.put("/:id", async (request, response) => {
 
 // DELETE artist
 artistsRouter.delete("/:id", async (request, response) => {
+  // DELETES EVERYTHING ASSOCIATED TO THIS ARTIST. USE WITH CAUTION!
+
   const id = request.params.id; // tager id fra URL'en
   const values = [id];
-
-  // DELETE from artists_tracks WHERE artist_id = ?;
-  // DELETE from ARTISTS
   try {
-    const query = `SELECT track_id from artists_tracks WHERE artist_id = ?;`;
-    const [results] = await connection.execute(query, values);
-    const associatedTrackIDs = [];
+    // Delete all junction entries - need to do this first to get rid of dependencies
+    await deleteJunctionEntries(values)
 
-    results.forEach(e => {associatedTrackIDs.push(e.track_id)});
-    console.log("test:",associatedTrackIDs.values());
-    // const newQuery = `SELECT id from tracks WHERE id in (?);`
-    // const [results2] = await connection.execute(newQuery, associatedTrackIDs)
-    // console.log(results2);
-    // const test = Object.values(results)
-    // console.log("test", test);
-    // await deleteTrack
-    response.json(associatedTrackIDs);
+    // Then the artist themself
+    const artistQuery = `DELETE from artists WHERE id = ?`
+    await connection.execute(artistQuery, values);
+
+
+    // And all their tracks
+    const trackQuery = /*sql*/ `DELETE from tracks
+    WHERE id NOT IN (SELECT track_id from artists_tracks)`
+    const [trackResult] = await connection.execute(trackQuery);
+
+    response.json(trackResult);
   } catch (err) {
     response.json(err);
   }
 
-  // connection.query(query, values, (error, results, fields) => {
-  //   if (error) {
-  //     response.json(error);
-  //   } else {
-  //     response.json(results);
-  //   }
-  // });
 });
+
+async function deleteJunctionEntries(values) {
+  const firstDelete = `DELETE from artists_tracks WHERE artist_id = ?`
+  await connection.execute(firstDelete, values);
+  
+  const secondDelete = `DELETE from artists_albums WHERE artist_id = ?`
+  await connection.execute(secondDelete, values);
+
+  const thirdDelete = `DELETE from albums_tracks
+  WHERE album_id NOT IN (SELECT album_id FROM artists_albums)`
+  await connection.execute(thirdDelete);
+}
 
 export default artistsRouter;
