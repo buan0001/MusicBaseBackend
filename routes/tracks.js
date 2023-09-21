@@ -62,4 +62,30 @@ tracksRouter.get("/:id", async(request, response) => {
   response.json(results);
 });
 
+tracksRouter.post("/", async (request, response) => {
+  const track = request.body;
+
+  // create new song
+  const trackQuery = /*sql*/ `
+    INSERT INTO tracks (title, durationSeconds) VALUES(?, ?)`;
+  const trackValues = [track.title, track.durationSeconds];
+
+  const [trackResult] = await connection.execute(trackQuery, trackValues);
+  // id of newly created song
+  const newTrackId = trackResult.insertId;
+
+  // create new arist-song relation in artists_songs
+  const artistTrackQuery = /*sql*/ `
+    INSERT INTO artists_tracks (artist_id, track_id) VALUES(?, ?)`;
+  const artistTrackValues = [track.artistId, newTrackId];
+
+  const [artistTrackResult] = await connection.execute(
+    artistTrackQuery,
+    artistTrackValues
+  );
+  console.log(artistTrackResult);
+
+  response.json({ message: "New track created!" });
+});
+
 export default tracksRouter;
