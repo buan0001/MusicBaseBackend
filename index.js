@@ -9,6 +9,7 @@ const port = 3333;
 
 app.use(express.json());
 app.use(cors());
+
 app.use("/artists", artistsRouter);
 app.use("/tracks", tracksRouter);
 app.use("/albums", albumsRouter);
