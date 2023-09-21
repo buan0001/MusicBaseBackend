@@ -21,7 +21,7 @@ albumsRouter.get("/", async (request, response) => {
   response.json(results);
 });
 
-// GET Endpoint "/albums/search?q=something" 
+// GET Endpoint "/albums/search?q=something"
 albumsRouter.get("/search", async (request, response) => {
   console.log("search albums get");
   const query = request.query.q;
@@ -114,6 +114,20 @@ albumsRouter.post("/", async (request, response) => {
   console.log(artistAlbumResults);
 
   response.json({ message: "New album created" });
+});
+
+albumsRouter.put("/:id", async (request, response) => {
+  console.log("albums put");
+  const id = request.params.id; // tager id fra URL'en
+  const album = request.body;
+  const query = "UPDATE albums SET title = ?, releaseYear = ? WHERE id = ?";
+  const values = [album.title, album.releaseYear, id];
+  try {
+    const [results] = await connection.execute(query, values);
+    response.json(results);
+  } catch (err) {
+    response.json({ message: "Couldn't update Album" });
+  }
 });
 
 export default albumsRouter;
