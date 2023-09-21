@@ -24,7 +24,7 @@ app.get("/", (request, response) => {
   response.send("MusicBase rest api 🎉");
 });
 
-app.get("/search/all", async (req, res) => {
+app.get("/all/search", async (req, res) => {
   const query = req.query.q;
   console.log(query);
 
