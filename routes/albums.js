@@ -41,9 +41,13 @@ albumsRouter.get("/search", async (request, response) => {
   }
 });
 
+// lige nu kan man ikke se albums der ikke har både artist og tracks tilknyttet
 albumsRouter.get("/:id", async (request, response) => {
   console.log("one albums get");
   const id = request.params.id;
+
+  const album = request.params;
+  console.log("ALBUM UD FRA ID ", album);
 
   const query = /*sql*/ `
         SELECT DISTINCT albums.*,
@@ -63,6 +67,7 @@ albumsRouter.get("/:id", async (request, response) => {
   const values = [id];
 
   const [results] = await connection.execute(query, values);
+  console.log("album med id results ", results);
 
   if (results[0]) {
     const album = results[0];
