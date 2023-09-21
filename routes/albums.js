@@ -47,14 +47,14 @@ albumsRouter.get("/search", async (request, response) => {
   }
 });
 
-// lige nu kan man ikke se albums der ikke har både artist og tracks tilknyttet
 albumsRouter.get("/:id", async (request, response) => {
   console.log("one albums get");
   const id = request.params.id;
 
-  const album = request.params;
-  console.log("ALBUM UD FRA ID ", album);
+  // const album = request.params;
+  // console.log("ALBUM UD FRA ID ", album);
 
+  // Here LEFT JOIN does so we can still see albums even if it doesn't have artist or/and tracks
   const query = /*sql*/ `
         SELECT DISTINCT albums.*,
             tracks.title as trackTitle,
@@ -63,17 +63,17 @@ albumsRouter.get("/:id", async (request, response) => {
             artists.name as artistName,
             artists.id as artistId
         FROM albums
-        JOIN albums_tracks ON albums.id = albums_tracks.albums_id
-        JOIN tracks ON albums_tracks.track_id = tracks.id
-        JOIN artists_albums ON albums.id = artists_albums.album_id
-        JOIN artists ON artists_albums.artist_id = artists.id
+        LEFT JOIN albums_tracks ON albums.id = albums_tracks.albums_id
+        LEFT JOIN tracks ON albums_tracks.track_id = tracks.id
+        LEFT JOIN artists_albums ON albums.id = artists_albums.album_id
+        LEFT JOIN artists ON artists_albums.artist_id = artists.id
         WHERE albums.id = ?
         ORDER BY albums.id;
     `;
   const values = [id];
 
   const [results] = await connection.execute(query, values);
-  console.log("album med id results ", results);
+  // console.log("album med id results ", results);
 
   if (results[0]) {
     const album = results[0];
@@ -84,13 +84,15 @@ albumsRouter.get("/:id", async (request, response) => {
       releaseYear: album.releaseYear,
       artist: album.artistName,
       artistID: album.artistId,
-      tracks: results.map((track) => {
-        return {
-          id: track.trackId,
-          title: track.trackTitle,
-          length: track.trackLengthSEC,
-        };
-      }),
+      tracks: results
+        .filter((track) => track.trackId !== null) // Filter out null tracks (albums without tracks)
+        .map((track) => {
+          return {
+            id: track.trackId,
+            title: track.trackTitle,
+            length: track.trackLengthSEC,
+          };
+        }),
     };
 
     response.json(albumWithSongs);
