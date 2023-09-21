@@ -14,7 +14,6 @@ albumsRouter.get("/", async (request, response) => {
     FROM albums
     JOIN artists_albums ON albums.id = artists_albums.album_id
     JOIN artists ON artists_albums.artist_id = artists.id;
-    
     `;
 
   const [results] = await connection.execute(query);
@@ -145,20 +144,7 @@ albumsRouter.put("/:id", async (request, response) => {
   }
 });
 
-albumsRouter.put("/:id", async (request, response) => {
-  console.log("albums put");
-  const id = request.params.id; // tager id fra URL'en
-  const album = request.body;
-  const query = "UPDATE albums SET title = ?, releaseYear = ? WHERE id = ?";
-  const values = [album.title, album.releaseYear, id];
-  try {
-    const [results] = await connection.execute(query, values);
-    response.json(results);
-  } catch (err) {
-    response.json({ message: "Couldn't update Album" });
-  }
-});
-
+export default albumsRouter;
 
 //  const query = /*sql*/ `
 //   -- se både artists + tracks i albums
@@ -174,5 +160,3 @@ albumsRouter.put("/:id", async (request, response) => {
 //     JOIN artists ON artists_albums.artist_id = artists.id
 //     ORDER BY albums.id;
 //     `;
-
-export default albumsRouter;
