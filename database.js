@@ -12,9 +12,9 @@ const connection = mysql.createConnection({
   multipleStatements: true,
 });
 
-if (process.env.MYSQL_CERT) {
-  dbconfig.ssl = { cs: fs.readFileSync("DigiCertGlobalRootCA.crt.pem") };
-}
+// if(process.env.MYSQL_CERT) {
+//     dbconfig.ssl = { ca: fs.readFileSync("") };
+// }
 
 // Export Database Connection
 export default connection;
