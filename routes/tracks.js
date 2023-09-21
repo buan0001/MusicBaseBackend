@@ -83,6 +83,8 @@ tracksRouter.post("/", async (request, response) => {
   const [artistTrackResult] = await connection.execute(artistTrackQuery, artistTrackValues);
   console.log(artistTrackResult);
 
+// Måske også post ind i album_tracks junctiontable
+
   response.json({ message: "New track created!" });
 });
 
