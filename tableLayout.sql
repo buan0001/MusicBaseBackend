@@ -71,9 +71,7 @@ VALUES ('Eminem', '1991-02-01'),
        ('Netsky', '1990-08-08');
 
 INSERT INTO albums (title, releaseYear)
-VALUES ('Rihanna album 1', 2014),
-       ('Rihanna album 2', 2019),
-
+VALUES
        -- Eminem
        ('Infinite', 1996),
        ('The Slim Shady LP', 1999),
@@ -866,12 +864,6 @@ VALUES
 ('Final Fantasy', 154),
 ('March 14', 267),
 
-('Rihanna track 1', '201'),
-('Rihanna track 2', '188'),
-('Rihanna track 3', '244'),
-('EMINEM track 1', '144'),
-('EMINEM track 2', '202'),
-('EMINEM track 3', '251'),
 ('Pitbull track 1', '99'),
 ('Pitbull track 2', '159'),
 ('Pitbull track 3', '311'),
@@ -896,27 +888,75 @@ VALUES (1,1),
 INSERT INTO artists_albums (artist_id, album_id)
 VALUES (1,1),
 (1,2),
-(2,3),
-(2,4),
-(3,5),
-(3,6),
-(4,7),
-(4,8),
-(4,9);
+(1,3),
+(1,4),
+(1,5),
+(1,6),
+(1,7),
+(1,8),
+(1,9),
+(1,10),
+(2,11),
+(2,12),
+(2,13),
+(3,14),
+(3,15),
+(3,16),
+(3,17),
+(3,18),
+(3,19),
+(3,20),
+(4,21),
+(4,22),
+(4,23),
+(4,24),
+(4,25),
+(4,26),
+(4,27),
+(4,28)
+(5,29),
+(5,30),
+(5,31),
+(5,32),
+(5,33),
+(5,34),
+(5,35),
+(5,36),
+(5,37),
+(5,38),
+(6,39),
+(6,41),
+(6,42),
+(6,43),
+(6,44),
+(6,45);
 
 INSERT INTO albums_tracks (albums_id, track_id)
-VALUES (1,1),
-(2,2),
-(2,3),
-(3,4),
-(3,5),
-(4,6),
-(5,7),
-(6,8),
-(6,9),
-(7,10),
-(8,11),
-(9,12);
+SELECT @Eminem_infinite_albums_id, track_id
+FROM tracks
+WHERE title IN ('Infinite', 
+'W.E.G.O.', 
+'It''s OK', 
+'Tonite', 
+'313',
+'Open Mic', 
+'Never 2 Far',
+'Searchin');
+
+SET @eminem_infinite_album_id = LAST_INSERT_ID();
+
+-- VALUES (1,1),
+-- (2,2),
+-- (2,3),
+-- (3,4),
+-- (3,5),
+-- (4,6),
+-- (5,7),
+-- (6,8),
+-- (6,9),
+-- (7,10),
+-- (8,11),
+-- (9,12);
 
 SELECT artists.name, artists.birthdate, tracks.title, tracks.durationSeconds FROM artists
 JOIN artists_tracks ON artists.id = artists_tracks.artist_id
