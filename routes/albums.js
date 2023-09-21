@@ -26,10 +26,16 @@ albumsRouter.get("/search", async (request, response) => {
   console.log("search albums get");
   const query = request.query.q;
   const queryString = /*sql*/ `
-    SELECT *
+   -- se albums med artist navn UDEN tracks
+    SELECT DISTINCT albums.*,
+      artists.name as ArtistName,
+      artists.id as artistId
     FROM albums
+    JOIN artists_albums ON albums.id = artists_albums.album_id
+    JOIN artists ON artists_albums.artist_id = artists.id
     WHERE title LIKE ?
-    ORDER BY title`;
+    ORDER BY title;
+    `;
   const values = [`%${query}%`];
   console.log(queryString);
   const [results] = await connection.execute(queryString, values);
@@ -82,9 +88,9 @@ albumsRouter.get("/:id", async (request, response) => {
         return {
           id: track.trackId,
           title: track.trackTitle,
-          length: track.trackLengthSEC
+          length: track.trackLengthSEC,
         };
-      })
+      }),
     };
 
     response.json(albumWithSongs);
@@ -115,9 +121,11 @@ albumsRouter.post("/", async (request, response) => {
     `;
   const artistAlbumValues = [album.artistId, newAlbumId];
 
-  const artistAlbumResults = await connection.execute(joinAlbumArtistQuery, artistAlbumValues);
+  const artistAlbumResults = await connection.execute(
+    joinAlbumArtistQuery,
+    artistAlbumValues
+  );
   console.log(artistAlbumResults);
-
   response.json({ message: "New album created" });
 });
 
