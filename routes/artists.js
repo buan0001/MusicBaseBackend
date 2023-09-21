@@ -12,7 +12,7 @@ artistsRouter.get("/", async (request, response) => {
    SELECT * FROM artists;
     `;
 
-  const [results] = await connection.execute(query, values);
+  const [results] = await connection.execute(query);
   response.json(results);
 });
 
@@ -61,7 +61,6 @@ artistsRouter.get("/:id", async (request, response) => {
 //     }
 //   });
 // });
-
 
 /* INDSÆT KORREKT INFORMATION DER SKAL DISPLAYES FOR ARTIST, DVS. IKKE MAIL & TITLE */
 // CREATE artist
