@@ -44,26 +44,6 @@ artistsRouter.get("/:id", async (request, response) => {
   // response.json(results);
 });
 
-//  SEARCH 1 ARTIST SPECIFIKT??
-// artistsRouter.get("/search", (request, response) => {
-//   console.log("searching for artist");
-//   const query = request.query.q;
-//   console.log(query);
-
-//   const queryString = /*sql*/ `
-//     SELECT * FROM artists WHERE name LIKE ? ORDER BY name;`;
-//   const values = [`%${query}%`];
-//   connection.query(queryString, values, (error, results) => {
-//     if (error) {
-//       console.error(error);
-//       response.status(500).json({ message: "Error occured" });
-//     } else {
-//       response.json(results);
-//     }
-//   });
-// });
-
-/* INDSÆT KORREKT INFORMATION DER SKAL DISPLAYES FOR ARTIST, DVS. IKKE MAIL & TITLE */
 // CREATE artist
 artistsRouter.post("/", async (request, response) => {
   const artist = request.body;
@@ -72,7 +52,6 @@ artistsRouter.post("/", async (request, response) => {
   response.json(await tryExcecute(query,values))
 });
 
-/* INDSÆT KORREKT INFORMATION DER SKAL DISPLAYES FOR ARTIST, DVS. IKKE MAIL & TITLE */
 // UPDATE artist
 artistsRouter.put("/:id", async (request, response) => {
   const id = request.params.id; // tager id fra URL'en

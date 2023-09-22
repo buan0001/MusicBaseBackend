@@ -145,18 +145,3 @@ albumsRouter.put("/:id", async (request, response) => {
 });
 
 export default albumsRouter;
-
-//  const query = /*sql*/ `
-//   -- se både artists + tracks i albums
-//     SELECT DISTINCT albums.*,
-//     tracks.title as trackTitle,
-//     tracks.id as trackId,
-//     artists.name as ArtistName,
-//     artists.id as ArtistId
-//     FROM albums
-//     JOIN albums_tracks ON albums.id = albums_tracks.albums_id
-//     JOIN tracks ON albums_tracks.track_id = tracks.id
-//     JOIN artists_albums ON albums.id = artists_albums.album_id
-//     JOIN artists ON artists_albums.artist_id = artists.id
-//     ORDER BY albums.id;
-//     `;
