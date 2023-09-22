@@ -81,10 +81,17 @@ tracksRouter.post("/", async (request, response) => {
     INSERT INTO artists_tracks (artist_id, track_id) VALUES(?, ?)`;
   const artistTrackValues = [track.artistId, newTrackId];
 
+  
+  const [artistTrackResult] = await connection.execute(artistTrackQuery, artistTrackValues) 
+  //   response.json({ message: "New track created!" });
+  
   // Måske også post ind i album_tracks junctiontable
+  const albumTrackQuery = /* sql */ `
+  INSERT INTO albums_tracks (albums_id, track_id) VALUES (?, ?)`;
+  const albumTrackValues = [track.albumId, newTrackId]; 
 
-  response.json(await tryExcecute(artistTrackQuery, artistTrackValues));
-//   response.json({ message: "New track created!" });
+  response.json(await tryExcecute(albumTrackQuery, albumTrackValues));
+
 });
 
 // Updates a track
