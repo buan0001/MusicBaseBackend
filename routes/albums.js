@@ -5,7 +5,7 @@ const albumsRouter = Router();
 
 // READ all albums
 albumsRouter.get("/", async (request, response) => {
-  console.log("all albums get");
+  // console.log("all albums get");
   const query = /*sql*/ `
      -- se albums med artist navn UDEN tracks
     SELECT DISTINCT albums.*,
@@ -76,7 +76,6 @@ albumsRouter.get("/:id", async (request, response) => {
 
   if (results[0]) {
     const album = results[0];
-    console.log(results);
     const albumWithSongs = {
       id: album.id,
       title: album.title,
@@ -122,11 +121,8 @@ albumsRouter.post("/", async (request, response) => {
     `;
   const artistAlbumValues = [album.artistId, newAlbumId];
 
-  const artistAlbumResults = await connection.execute(
-    joinAlbumArtistQuery,
-    artistAlbumValues
-  );
-  console.log(artistAlbumResults);
+  const artistAlbumResults = await connection.execute(joinAlbumArtistQuery, artistAlbumValues);
+
   response.json({ message: "New album created" });
 });
 

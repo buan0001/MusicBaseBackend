@@ -5,7 +5,7 @@ import { tryExcecute } from "../helpers.js";
 const combinedRouter = Router();
 
 combinedRouter.get("/", async (req, res) => {
-  const artistString = /*sql*/ `SELECT  * FROM artists;`;
+  const artistString = /*sql*/ `SELECT  * FROM artist;`;
 
   const trackString = /*sql*/ `SELECT  * FROM tracks;`;
 
@@ -25,13 +25,16 @@ combinedRouter.get("/search", async (req, res) => {
   // SELECT  artists.id, artists.name, artists.birthdate as time FROM artists
   const artistString = /*sql*/ `
          SELECT  * FROM artists
-          where artists.name like ?`;
+          where artists.name like ?
+          ORDER by name`;
 
   const trackString = /*sql*/ `SELECT  * FROM tracks
-          where tracks.title like ?`;
+          where tracks.title like ?
+          ORDER by title`;
 
   const albumString = /*sql*/ ` SELECT  * FROM albums
-          where albums.title like ?;`;
+          where albums.title like ?
+          ORDER by title;`;
 
   const values = [`%${query}%`];
   const artists = await tryExcecute(artistString, values);
