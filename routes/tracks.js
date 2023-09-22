@@ -87,12 +87,14 @@ tracksRouter.post("/", async (request, response) => {
 //   response.json({ message: "New track created!" });
 });
 
+// Updates a track
 tracksRouter.put("/:id", async (request, response) => {
+  console.log("tracks put");
   const id = request.params.id;
   const track = request.body;
   const query = "UPDATE tracks SET title = ?, durationSeconds = ? WHERE id = ?";
-  const values = [track.name, track.birthdate, id];
-  response.json(await tryExcecute(query,values))
+  const values = [track.title, track.durationSeconds, id];
+    response.json(await tryExcecute(query, values))
 });
 
 export default tracksRouter;
