@@ -17,7 +17,7 @@ tracksRouter.get("/", async (request, response) => {
     INNER JOIN artists ON artists_tracks.artist_id = artists.id
     ORDER BY artists.id ASC;
     `;
-//   const [results] = await connection.execute(query);
+  // response.json(await connection.execute(query, values))
   response.json(await tryExcecute(query));
 });
 
