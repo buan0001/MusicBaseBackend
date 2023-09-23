@@ -16,7 +16,7 @@ if (process.env.MYSQL_CERT) {
   dbConfig.ssl = { ca: fs.readFileSync("DigiCertGlobalRootCA.crt.pem") };
 }
 
-const connection = await mysql.createConnection(whatever)
+const connection = await mysql.createConnection(dbConfig);
 
 // Export Database Connection
 export default connection;

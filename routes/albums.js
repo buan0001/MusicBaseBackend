@@ -1,5 +1,6 @@
 import { Router } from "express";
 import connection from "../database.js";
+import { tryExcecute } from "../helpers.js";
 
 const albumsRouter = Router();
 
@@ -9,7 +10,7 @@ albumsRouter.get("/", async (request, response) => {
   const query = /*sql*/ `
      -- se albums med artist navn UDEN tracks
     SELECT DISTINCT albums.*,
-      artists.name as ArtistName,
+      artists.name as artistName,
       artists.id as artistId
     FROM albums
     JOIN artists_albums ON albums.id = artists_albums.album_id
@@ -27,7 +28,7 @@ albumsRouter.get("/search", async (request, response) => {
   const queryString = /*sql*/ `
    -- se albums med artist navn UDEN tracks
     SELECT DISTINCT albums.*,
-      artists.name as ArtistName,
+      artists.name as artistName,
       artists.id as artistId
     FROM albums
     JOIN artists_albums ON albums.id = artists_albums.album_id
@@ -37,13 +38,24 @@ albumsRouter.get("/search", async (request, response) => {
     `;
   const values = [`%${query}%`];
   console.log(queryString);
-  const [results] = await connection.execute(queryString, values);
-  // response.json(results);
-  if (results.length) {
-    response.json(results);
-  } else {
-    response.json({ message: "No album found" });
-  }
+  response.json({ albums: await tryExcecute(queryString, values) });
+});
+
+albumsRouter.get("/search/:id", async (request, response) => {
+  console.log("SEARCH SPECIFIC ARTIST ID");
+  const queryString = /*sql*/ `
+   -- se albums med artist navn UDEN tracks
+    SELECT DISTINCT albums.*,
+      artists.name as artistName,
+      artists.id as artistId
+    FROM albums
+    JOIN artists_albums ON albums.id = artists_albums.album_id
+    JOIN artists ON artists_albums.artist_id = artists.id
+    WHERE artists.id = ?
+    ORDER BY artistName;
+    `;
+  const values = [request.params.id];
+  response.json(await tryExcecute(queryString, values));
 });
 
 albumsRouter.get("/:id", async (request, response) => {

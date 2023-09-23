@@ -11,7 +11,6 @@ artistsRouter.get("/", async (request, response) => {
    ORDER BY name;
     `;
 
-    
   // const [results] = await connection.execute(query);
   response.json(await tryExcecute(query));
 });
@@ -26,7 +25,7 @@ artistsRouter.get("/search", async (request, response) => {
     ORDER BY name`;
   const values = [`%${searchString}%`];
   // const [results] = await connection.execute(query, values);
-  response.json(await tryExcecute(query,values));
+  response.json({ artists: await tryExcecute(query, values) });
   // response.json(results);
 });
 
@@ -39,7 +38,7 @@ artistsRouter.get("/:id", async (request, response) => {
     `;
   const values = [id];
 
-  response.json(await tryExcecute(query,values));
+  response.json(await tryExcecute(query, values));
   // const [results] = await connection.execute(query, values);
   // response.json(results);
 });
@@ -49,7 +48,7 @@ artistsRouter.post("/", async (request, response) => {
   const artist = request.body;
   const query = "INSERT INTO artists (name, birthdate) VALUES (?, ?)";
   const values = [artist.name, artist.birthdate];
-  response.json(await tryExcecute(query,values))
+  response.json(await tryExcecute(query, values));
 });
 
 // UPDATE artist
@@ -58,7 +57,7 @@ artistsRouter.put("/:id", async (request, response) => {
   const artist = request.body;
   const query = "UPDATE artists SET name = ?, birthdate = ? WHERE id = ?";
   const values = [artist.name, artist.birthdate, id];
-  response.json(await tryExcecute(query,values))
+  response.json(await tryExcecute(query, values));
 });
 
 // DELETE artist
@@ -69,37 +68,33 @@ artistsRouter.delete("/:id", async (request, response) => {
   const values = [id];
   try {
     // Delete all junction entries - need to do this first to get rid of dependencies
-    await deleteJunctionEntries(values)
+    await deleteJunctionEntries(values);
 
     // Then the artist themself
-    const artistQuery = `DELETE from artists WHERE id = ?`
+    const artistQuery = `DELETE from artists WHERE id = ?`;
     await connection.execute(artistQuery, values);
-
 
     // And all their tracks
     const trackQuery = /*sql*/ `DELETE from tracks
-    WHERE id NOT IN (SELECT track_id from artists_tracks)`
+    WHERE id NOT IN (SELECT track_id from artists_tracks)`;
 
     // tryExcecute(trackQuery)
-        response.json(await tryExcecute(trackQuery));
+    response.json(await tryExcecute(trackQuery));
   } catch (err) {
     response.json(err);
   }
-
 });
 
 async function deleteJunctionEntries(values) {
-  const firstDelete = `DELETE from artists_tracks WHERE artist_id = ?`
+  const firstDelete = `DELETE from artists_tracks WHERE artist_id = ?`;
   await connection.execute(firstDelete, values);
-  
-  const secondDelete = `DELETE from artists_albums WHERE artist_id = ?`
+
+  const secondDelete = `DELETE from artists_albums WHERE artist_id = ?`;
   await connection.execute(secondDelete, values);
 
   const thirdDelete = `DELETE from albums_tracks
-  WHERE album_id NOT IN (SELECT album_id FROM artists_albums)`
+  WHERE album_id NOT IN (SELECT album_id FROM artists_albums)`;
   await connection.execute(thirdDelete);
 }
-
-
 
 export default artistsRouter;
