@@ -17,7 +17,7 @@ tracksRouter.get("/", async (request, response) => {
     INNER JOIN artists ON artists_tracks.artist_id = artists.id
     ORDER BY artists.id ASC;
     `;
-  // response.json(await connection.execute(query, values))
+  //   const [results] = await connection.execute(query);
   response.json(await tryExcecute(query));
 });
 
@@ -39,8 +39,8 @@ WHERE tracks.title LIKE ?;
     `;
 
   const values = [`%${query}%`];
-  
-  response.json(await tryExcecute(queryString,values));
+
+  response.json(await tryExcecute(queryString, values));
 });
 
 // Get a single track
@@ -60,39 +60,58 @@ tracksRouter.get("/:id", async (request, response) => {
             WHERE tracks.id = ?;
     `;
   const values = [id];
-  
+
   response.json(await tryExcecute(queryString, values));
 });
 
 tracksRouter.post("/", async (request, response) => {
-  const track = request.body;
+  try {
+    const track = request.body;
 
-  // create new song
-  const trackQuery = /*sql*/ `
-    INSERT INTO tracks (title, durationSeconds) VALUES(?, ?)`;
-  const trackValues = [track.title, track.durationSeconds];
+    // Create new track
+    const trackQuery = /*sql*/ `
+      INSERT INTO tracks (title, durationSeconds) VALUES (?, ?)`;
+    const trackValues = [track.title, track.durationSeconds];
 
-  const [trackResult] = await connection.execute(trackQuery, trackValues);
-  // id of newly created song
-  const newTrackId = trackResult.insertId;
+    const [trackResult] = await connection.execute(trackQuery, trackValues);
+    const newTrackId = trackResult.insertId;
 
-  // create new arist-song relation in artists_songs
-  const artistTrackQuery = /*sql*/ `
-    INSERT INTO artists_tracks (artist_id, track_id) VALUES(?, ?)`;
-  const artistTrackValues = [track.artistId, newTrackId];
+    // Create artist-track relations
+    const artistTrackQuery = /*sql*/ `
+      INSERT INTO artists_tracks (artist_id, track_id) VALUES (?, ?)`;
 
-  // Måske også post ind i album_tracks junctiontable
+    // Assuming track.artistIds is an array of artist IDs
+    for (const artistId of track.artistIds) {
+      const artistTrackValues = [artistId, newTrackId];
+      await connection.execute(artistTrackQuery, artistTrackValues);
+    }
 
-  response.json(await tryExcecute(artistTrackQuery, artistTrackValues));
-//   response.json({ message: "New track created!" });
+    // Create album-track relations
+    const albumTrackQuery = /* sql */ `
+      INSERT INTO albums_tracks (albums_id, track_id) VALUES (?, ?)`;
+
+    // Assuming track.albumIds is an array of album IDs
+    for (const albumId of track.albumIds) {
+      const albumTrackValues = [albumId, newTrackId];
+      await connection.execute(albumTrackQuery, albumTrackValues);
+    }
+
+    // Response after all operations are completed
+    response.json({ message: "New track created!" });
+  } catch (error) {
+    console.error("Error:", error);
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
+// Updates a track
 tracksRouter.put("/:id", async (request, response) => {
+  console.log("tracks put");
   const id = request.params.id;
   const track = request.body;
   const query = "UPDATE tracks SET title = ?, durationSeconds = ? WHERE id = ?";
-  const values = [track.name, track.birthdate, id];
-  response.json(await tryExcecute(query,values))
+  const values = [track.title, track.durationSeconds, id];
+  response.json(await tryExcecute(query, values));
 });
 
 export default tracksRouter;
