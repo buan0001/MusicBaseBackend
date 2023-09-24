@@ -1,6 +1,6 @@
 import connection from "./database.js";
 
-async function tryExcecute(query, values) {
+async function tryExecute(query, values) {
   try {
     const [results] = await connection.execute(query, values);
     return results;
@@ -9,4 +9,4 @@ async function tryExcecute(query, values) {
   }
 }
 
-export { tryExcecute };
+export { tryExecute as tryExcecute };
