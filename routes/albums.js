@@ -1,13 +1,16 @@
 import { Router } from "express";
 import connection from "../database.js";
+import { tryExecute } from "../helpers.js";
 
 const albumsRouter = Router();
 
 // READ all albums
 albumsRouter.get("/", async (request, response) => {
   // console.log("all albums get");
-  const query = /*sql*/ `
-     -- se albums med artist navn UDEN tracks
+  const query =
+    /*sql*/
+    `
+     -- See albums with artist without tracks
     SELECT DISTINCT albums.*,
       artists.name as ArtistName,
       artists.id as artistId
@@ -16,16 +19,17 @@ albumsRouter.get("/", async (request, response) => {
     JOIN artists ON artists_albums.artist_id = artists.id;
     `;
 
-  const [results] = await connection.execute(query);
-  response.json(results);
+  response.json(await tryExecute(query));
 });
 
 // GET Endpoint "/albums/search?q=something"
 albumsRouter.get("/search", async (request, response) => {
   console.log("search albums get");
   const query = request.query.q;
-  const queryString = /*sql*/ `
-   -- se albums med artist navn UDEN tracks
+  const queryString =
+    /*sql*/
+    `
+   -- See albums with artist name without tracks
     SELECT DISTINCT albums.*,
       artists.name as ArtistName,
       artists.id as artistId
@@ -35,8 +39,10 @@ albumsRouter.get("/search", async (request, response) => {
     WHERE title LIKE ?
     ORDER BY title;
     `;
+
   const values = [`%${query}%`];
   console.log(queryString);
+
   const [results] = await connection.execute(queryString, values);
   // response.json(results);
   if (results.length) {
@@ -53,8 +59,10 @@ albumsRouter.get("/:id", async (request, response) => {
   // const album = request.params;
   // console.log("ALBUM UD FRA ID ", album);
 
-  // Here LEFT JOIN does so we can still see albums even if it doesn't have artist or/and tracks
-  const query = /*sql*/ `
+  // LEFT JOIN to still see albums even if it doesn't have an artist and/or tracks
+  const query =
+    /*sql*/
+    `
         SELECT DISTINCT albums.*,
             tracks.title as trackTitle,
             tracks.id as trackId,
@@ -69,9 +77,10 @@ albumsRouter.get("/:id", async (request, response) => {
         WHERE albums.id = ?
         ORDER BY albums.id;
     `;
+
   const values = [id];
 
-  const [results] = await connection.execute(query, values);
+  response.json(await tryExecute(query, values));
   // console.log("album med id results ", results);
 
   if (results[0]) {
@@ -104,21 +113,27 @@ albumsRouter.post("/", async (request, response) => {
 
   const album = request.body;
 
-  const query = /*sql*/ `
-     -- opret album
+  const query =
+    /*sql*/
+    `
+     -- Create album
      INSERT INTO albums (title, releaseYear)
      VALUES (?, ?)
     `;
+
   const albumValues = [album.title, album.releaseYear];
-  const [results] = await connection.execute(query, albumValues);
+  response.json(await tryExecute(query, albumValues));
 
   const newAlbumId = results.insertId;
 
-  const joinAlbumArtistQuery = /*sql*/ `
-     -- opret join mellem album og artist
+  const joinAlbumArtistQuery =
+    /*sql*/
+    `
+     -- Inserts artists and albums ID's into junction table
      INSERT INTO artists_albums (artist_id, album_id)
      VALUES (?, ?)
     `;
+
   const artistAlbumValues = [album.artistId, newAlbumId];
 
   const artistAlbumResults = await connection.execute(joinAlbumArtistQuery, artistAlbumValues);
@@ -128,18 +143,14 @@ albumsRouter.post("/", async (request, response) => {
 
 albumsRouter.put("/:id", async (request, response) => {
   console.log("albums put");
-  const id = request.params.id; // tager id fra URL'en
+  const id = request.params.id; // Takes ID from the URL
   const album = request.body;
   const query = "UPDATE albums SET title = ?, releaseYear = ? WHERE id = ?";
   const values = [album.title, album.releaseYear, id];
-  try {
-    const [results] = await connection.execute(query, values);
-    response.json(results);
-  } catch (err) {
-    response.json({ message: "Couldn't update Album" });
-  }
+  response.json(await tryExecute(query, values));
 });
 
+export default albumsRouter;
 albumsRouter.post("/completeAlbum", async (request, response) => {
   // to use this in postman, you have to use this json blueprint:
   // {

@@ -1,13 +1,11 @@
--- Sletter Database hvis den findes
+-- Deletes Database if it exists
 DROP DATABASE IF EXISTS musicDB;
 
--- Laver Database
 CREATE DATABASE musicDB;
 
--- Bruger Database
 USE musicDB;
 
--- Sletter tables hvis de findes
+-- Deletes tables if they exist
 DROP TABLE IF EXISTS albums_tracks, artists_albums, artists_tracks, artists, tracks, albums;
 
 CREATE TABLE artists(
@@ -134,6 +132,7 @@ VALUES
        ('More Life', 2017),
        ('Scorpion', 2018),
 
+        -- Test Albums
        ('Pitbull album 1', 2008),
        ('Pitbull album 2', 2012),
        ('Netsky album 1', 2004),
@@ -870,12 +869,13 @@ VALUES
 ('Final Fantasy', 154),
 ('March 14', 267),
 
-('Pitbull track 1', '99'),
-('Pitbull track 2', '159'),
-('Pitbull track 3', '311'),
-('Netsky track 1', '488'),
-('Netsky track 2', '401'),
-('Netsky track 3', '297');
+-- Test Tracks
+('Pitbull track 1', 99),
+('Pitbull track 2', 159),
+('Pitbull track 3', 311),
+('Netsky track 1', 488),
+('Netsky track 2', 401),
+('Netsky track 3', 297);
 
 INSERT INTO artists_tracks (artist_id, track_id)
 VALUES
@@ -1816,7 +1816,8 @@ VALUES
 (13, 194),
 (13, 195),
 
-
+-- Linkin Park
+-- Hybrid Theory (2000): 12 tracks -- ID #14
 (14, 196),
 (14, 197),
 (14, 198),
@@ -1830,6 +1831,7 @@ VALUES
 (14, 206),
 (14, 207),
 
+-- Meteora (2003): 13 tracks -- ID #15
 (15, 208),
 (15, 209),
 (15, 210),
@@ -1843,6 +1845,7 @@ VALUES
 (15, 218),
 (15, 219),
 
+-- Minutes to Midnight (2007): 12 tracks -- ID #16
 (16, 220),
 (16, 221),
 (16, 222),
@@ -1856,6 +1859,7 @@ VALUES
 (16, 230),
 (16, 231),
 
+-- A Thousand Suns (2010): 15 tracks -- ID #17
 (17, 232),
 (17, 233),
 (17, 234),
@@ -1872,6 +1876,7 @@ VALUES
 (17, 245),
 (17, 246),
 
+--Living Things (2012): 12 tracks -- ID #18
 (18, 247),
 (18, 248),
 (18, 249),
@@ -1885,6 +1890,7 @@ VALUES
 (18, 257),
 (18, 258),
 
+-- The Hunting Party (2014): 12 tracks -- ID #19
 (19, 259),
 (19, 260),
 (19, 261),
@@ -1898,6 +1904,7 @@ VALUES
 (19, 269),
 (19, 270),
 
+-- One More Light (2017): 10 tracks -- ID #20
 (20, 271),
 (20, 272),
 (20, 273),
@@ -1909,6 +1916,8 @@ VALUES
 (20, 279),
 (20, 280),
 
+-- Rihanna
+-- Music of the Sun (2005): 13 tracks -- ID #21
 (21, 281),
 (21, 282),
 (21, 283),
@@ -1922,6 +1931,7 @@ VALUES
 (21, 291),
 (21, 292),
 
+-- A Girl Like Me (2006): 14 tracks -- ID #22
 (22, 293),
 (22, 294),
 (22, 295),
@@ -1936,6 +1946,7 @@ VALUES
 (22, 304),
 (22, 305),
 
+-- Good Girl Gone Bad (2007): 15 tracks -- ID #23
 (23, 306),
 (23, 307),
 (23, 308),
@@ -1951,6 +1962,7 @@ VALUES
 (23, 318),
 (23, 319),
 
+-- Rated R (2009): 13 tracks -- ID #24
 (24, 320),
 (24, 321),
 (24, 322),
@@ -1964,6 +1976,7 @@ VALUES
 (24, 330),
 (24, 331),
 
+-- Loud (2010): 11 tracks -- ID #25
 (25, 332),
 (25, 333),
 (25, 334),
@@ -1976,6 +1989,7 @@ VALUES
 (25, 341),
 (25, 342),
 
+-- Talk That Talk (2011): 11 tracks -- ID #26
 (26, 343),
 (26, 344),
 (26, 345),
@@ -1988,6 +2002,7 @@ VALUES
 (26, 352),
 (26, 353),
 
+-- Unapologetic (2012): 14 tracks -- ID #27
 (27, 354),
 (27, 355),
 (27, 356),
@@ -2002,6 +2017,7 @@ VALUES
 (27, 365),
 (27, 366),
 
+-- ANTI (2016): 13 tracks -- ID #28
 (28, 367),
 (28, 368),
 (28, 369),
@@ -2015,6 +2031,8 @@ VALUES
 (28, 377),
 (28, 378),
 
+-- Chet Baker
+-- Chet Baker Sings (1954): 20 tracks -- ID #29
 (29, 379),
 (29, 380),
 (29, 381),
@@ -2037,6 +2055,7 @@ VALUES
 (29, 398),
 (29, 399),
 
+-- It Could Happen to You (1958): 15 tracks -- ID #30
 (30, 400),
 (30, 401),
 (30, 402),
@@ -2051,6 +2070,7 @@ VALUES
 (30, 411),
 (30, 412),
 
+-- Chet (1959): 11 tracks -- ID #31
 (31, 413),
 (31, 414),
 (31, 415),
@@ -2063,6 +2083,7 @@ VALUES
 (31, 422),
 (31, 423),
 
+-- Chet Baker in New York (1959): 9 tracks -- ID #32
 (32, 424),
 (32, 425),
 (32, 426),
@@ -2073,6 +2094,7 @@ VALUES
 (32, 431),
 (32, 432),
 
+-- Let's Get Lost (1989): 8 tracks -- ID #33
 (33, 433),
 (33, 434),
 (33, 435),
@@ -2082,6 +2104,7 @@ VALUES
 (33, 439),
 (33, 440),
 
+-- My Funny Valentine: The Complete Concert (1994): 16 tracks -- ID #34
 (34, 441),
 (34, 442),
 (34, 443),
@@ -2095,6 +2118,7 @@ VALUES
 (34, 451),
 (34, 452),
 
+-- No Problem (1980): 13 tracks -- ID #35
 (35, 453),
 (35, 454),
 (35, 455),
@@ -2108,6 +2132,7 @@ VALUES
 (35, 463),
 (35, 464),
 
+-- In New York (1958): 9 tracks -- ID #36
 (36, 465),
 (36, 466),
 (36, 467),
@@ -2117,6 +2142,7 @@ VALUES
 (36, 471),
 (36, 472),
 
+-- Playboys (1956): 8 tracks -- ID #37
 (37, 473),
 (37, 474),
 (37, 475),
@@ -2126,6 +2152,7 @@ VALUES
 (37, 479),
 (37, 480),
 
+-- Sings and Plays from the Film Let's Get Lost (1989): 8 tracks -- ID #38
 (38, 481),
 (38, 482),
 (38, 483),
@@ -2135,6 +2162,8 @@ VALUES
 (38, 487),
 (38, 488),
 
+-- Drake
+-- Thank Me Later (2010): 15 tracks -- ID #39
 (39, 489),
 (39, 490),
 (39, 491),
@@ -2152,6 +2181,7 @@ VALUES
 (39, 503),
 (39, 504),
 
+-- Take Care (2011): 17 tracks -- ID #40
 (40, 505),
 (40, 506),
 (40, 507),
@@ -2174,6 +2204,7 @@ VALUES
 (40, 524),
 (40, 525),
 
+-- Nothing Was the Same (2013): 13 tracks -- ID #41
 (41, 526),
 (41, 527),
 (41, 528),
@@ -2187,6 +2218,7 @@ VALUES
 (41, 536),
 (41, 537),
 
+-- Views (2016): 20 tracks -- ID #42
 (42, 538),
 (42, 539),
 (42, 540),
@@ -2200,6 +2232,7 @@ VALUES
 (42, 548),
 (42, 549),
 
+-- More Life (2017): 22 tracks -- ID #43
 (43, 550),
 (43, 551),
 (43, 552),
@@ -2221,6 +2254,7 @@ VALUES
 (43, 568),
 (43, 569),
 
+-- Scorpion (2018): 25 tracks -- ID #44
 (44, 570),
 (44, 571),
 (44, 572),
@@ -2256,13 +2290,13 @@ JOIN albums_tracks ON albums.id = albums_tracks.albums_id
 JOIN tracks ON albums_tracks.track_id = tracks.id;
 
 /*
-Albums amount:
-Eminem 10
-Doja 10
-LP 10
-Rihanna 10
-Chet 10
-Drake 10
+Number of albums for each artist:
+Eminem: 10 albums
+Doja Cat: 3 albums
+Linkin Park: 7 albums
+Rihanna 8 albums
+Chet Baker: 10 albums
+Drake: 6 albums
 
 EMINEM:
 Infinite (1996): 8 tracks -- ID #1
