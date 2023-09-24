@@ -41,7 +41,7 @@ albumsRouter.get("/search", async (request, response) => {
   response.json({ albums: await tryExcecute(queryString, values) });
 });
 
-albumsRouter.get("/search/:id", async (request, response) => {
+albumsRouter.get("/search/:artistId", async (request, response) => {
   console.log("SEARCH SPECIFIC ARTIST ID");
   const queryString = /*sql*/ `
    -- se albums med artist navn UDEN tracks
@@ -54,7 +54,7 @@ albumsRouter.get("/search/:id", async (request, response) => {
     WHERE artists.id = ?
     ORDER BY artistName;
     `;
-  const values = [request.params.id];
+  const values = [request.params.artistId];
   response.json(await tryExcecute(queryString, values));
 });
 
@@ -70,7 +70,7 @@ albumsRouter.get("/:id", async (request, response) => {
         SELECT DISTINCT albums.*,
             tracks.title as trackTitle,
             tracks.id as trackId,
-            tracks.durationSeconds trackLengthSEC,
+            tracks.durationSeconds,
             artists.name as artistName,
             artists.id as artistId
         FROM albums
@@ -100,7 +100,7 @@ albumsRouter.get("/:id", async (request, response) => {
           return {
             id: track.trackId,
             title: track.trackTitle,
-            length: track.trackLengthSEC,
+            durationSeconds: track.durationSeconds,
           };
         }),
     };
