@@ -9,4 +9,4 @@ async function tryExecute(query, values) {
   }
 }
 
-export { tryExecute as tryExecute };
+export { tryExecute };

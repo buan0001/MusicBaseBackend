@@ -12,7 +12,7 @@ albumsRouter.get("/", async (request, response) => {
     `
      -- See albums with artist without tracks
     SELECT DISTINCT albums.*,
-      artists.name as ArtistName,
+      artists.name as artistName,
       artists.id as artistId
     FROM albums
     JOIN artists_albums ON albums.id = artists_albums.album_id
@@ -31,7 +31,7 @@ albumsRouter.get("/search", async (request, response) => {
     `
    -- See albums with artist name without tracks
     SELECT DISTINCT albums.*,
-      artists.name as ArtistName,
+      artists.name as artistName,
       artists.id as artistId
     FROM albums
     JOIN artists_albums ON albums.id = artists_albums.album_id
@@ -42,14 +42,24 @@ albumsRouter.get("/search", async (request, response) => {
 
   const values = [`%${query}%`];
   console.log(queryString);
+  response.json({ albums: await tryExecute(queryString, values) });
+});
 
-  const [results] = await connection.execute(queryString, values);
-  // response.json(results);
-  if (results.length) {
-    response.json(results);
-  } else {
-    response.json({ message: "No album found" });
-  }
+albumsRouter.get("/search/:artistId", async (request, response) => {
+  console.log("SEARCH SPECIFIC ARTIST ID");
+  const queryString = /*sql*/ `
+   -- se albums med artist navn UDEN tracks
+    SELECT DISTINCT albums.*,
+      artists.name as artistName,
+      artists.id as artistId
+    FROM albums
+    JOIN artists_albums ON albums.id = artists_albums.album_id
+    JOIN artists ON artists_albums.artist_id = artists.id
+    WHERE artists.id = ?
+    ORDER BY artistName;
+    `;
+  const values = [request.params.artistId];
+  response.json(await tryExecute(queryString, values));
 });
 
 albumsRouter.get("/:id", async (request, response) => {
@@ -66,7 +76,7 @@ albumsRouter.get("/:id", async (request, response) => {
         SELECT DISTINCT albums.*,
             tracks.title as trackTitle,
             tracks.id as trackId,
-            tracks.durationSeconds trackLengthSEC,
+            tracks.durationSeconds,
             artists.name as artistName,
             artists.id as artistId
         FROM albums
@@ -80,7 +90,8 @@ albumsRouter.get("/:id", async (request, response) => {
 
   const values = [id];
 
-  response.json(await tryExecute(query, values));
+  // response.json(await tryExecute(query, values));
+  const [results] = await connection.execute(query, values);
   // console.log("album med id results ", results);
 
   if (results[0]) {
@@ -97,7 +108,7 @@ albumsRouter.get("/:id", async (request, response) => {
           return {
             id: track.trackId,
             title: track.trackTitle,
-            length: track.trackLengthSEC,
+            durationSeconds: track.durationSeconds,
           };
         }),
     };

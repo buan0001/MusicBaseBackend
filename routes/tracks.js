@@ -10,8 +10,8 @@ tracksRouter.get("/", async (request, response) => {
     /*sql*/
     `
     SELECT DISTINCT tracks.*,
-       artists.name as ArtistName,
-       artists.id as ArtistId
+       artists.name as artistName,
+       artists.id as artistId
     FROM tracks
     INNER JOIN artists_tracks ON tracks.id = artists_tracks.track_id
     INNER JOIN artists ON artists_tracks.artist_id = artists.id
@@ -38,12 +38,13 @@ INNER JOIN artists_tracks ON tracks.id = artists_tracks.track_id
 INNER JOIN artists ON artists_tracks.artist_id = artists.id
 INNER JOIN albums_tracks ON tracks.id = albums_tracks.track_id
 INNER JOIN albums ON albums_tracks.albums_id = albums.id
-WHERE tracks.title LIKE ?;
+WHERE tracks.title LIKE ?
+ORDER BY tracks.title;
     `;
 
   const values = [`%${query}%`];
 
-  response.json(await tryExecute(queryString, values));
+  response.json({ tracks: await tryExecute(queryString, values) });
 });
 
 // Get a single track
