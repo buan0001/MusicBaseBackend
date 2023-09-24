@@ -24,9 +24,7 @@ artistsRouter.get("/search", async (request, response) => {
     WHERE name LIKE ?
     ORDER BY name`;
   const values = [`%${searchString}%`];
-  // const [results] = await connection.execute(query, values);
   response.json({ artists: await tryExcecute(query, values) });
-  // response.json(results);
 });
 
 // READ one artist
@@ -92,6 +90,9 @@ async function deleteJunctionEntries(values) {
   const secondDelete = `DELETE from artists_albums WHERE artist_id = ?`;
   await connection.execute(secondDelete, values);
 
+  // Since artist_id isn't in this table, we can instead look for album_id
+  // In the second delete we delete BOTH the artist_id and the album_id
+  // We can use this to look for entries where albums_tracks.album_id has no match in artists_albums.album_id
   const thirdDelete = `DELETE from albums_tracks
   WHERE album_id NOT IN (SELECT album_id FROM artists_albums)`;
   await connection.execute(thirdDelete);
