@@ -144,18 +144,18 @@ albumsRouter.post("/completeAlbum", async (request, response) => {
   // to use this in postman, you have to use this json blueprint,
   // note that "trackids" should only be used if you want to add existing tracks, and the same for "artistId". If you want to create new tracks and/or artist(s) you can use "newTracks" and or "newArtists":
   // {
-  //   "trackids": [xx, xx, xx, xx...],
-  //   "title": "xxx",
-  //   "releaseYear": "xxxx",
-  //   "artistId": [x, x, x],
+  //   "trackids": [int, int, int,...],
+  //   "title": "varchar",
+  //   "releaseYear": "int",
+  //   "artistId": [int, int, int],
   //   "newTracks": [
-  //     {"title": "xxxx", "durationSeconds": xxx},
-  //     {"title": "xxx", "durationSeconds": xxx},
-  //     {"title": "xxx", "durationSeconds": xxx}
+  //     {"title": "varchar", "durationSeconds": int, "artistId":int},
+  //     {"title": "varchar", "durationSeconds": int, "artistId":int},
+  //     {"title": "varchar", "durationSeconds": int, "artistId":int}
   //   ],
   //   "newArtists": [
-  //     {"title": "xxx", "durationSeconds": xxx},
-  //     {"title": "xxx", "durationSeconds": xxx}
+  //     {"title": "varchar", "birthdate": yy-mm-dd},
+  //     {"title": "varchar", "birthdate": yy-mm-dd}
   //   ]
   // }
 
@@ -170,35 +170,41 @@ albumsRouter.post("/completeAlbum", async (request, response) => {
   const albumValues = [album.title, album.releaseYear];
   const [albumResults] = await connection.execute(albumQuery, albumValues);
 
+  console.log("ALBUM RESULTS:", albumResults);
   const trackIDs = request.body.trackids;
   const artistId = request.body.artistId;
   const newTracks = request.body.newTracks;
   const newArtists = request.body.newArtists;
   const newAlbumID = albumResults.insertId;
 
+  console.log(newAlbumID);
+  console.log("BODY:@@@@@@@@@@@@@@", album);
   if (newArtists) {
-    const newArtist = await addNewArtists(newArtists);
-    console.log(newArtist);
-    artistId.push(...newArtist);
+    const newArtistsID = await addNewArtists(newArtists);
+    console.log("new artists:", newArtistsID);
+    artistId.push(...newArtistsID);
   }
   if (artistId) {
-    for (const artistId of newArtist) {
+    for (const id of artistId) {
       const joinAlbumArtistQuery = /*sql*/ `
          -- opret join mellem album og artist
          INSERT INTO artists_albums (artist_id, album_id)
          VALUES (?, ?)
         `;
-      const artistAlbumValues = [artistId.artistId, newAlbumID];
-      const artistAlbumResults = await connection.execute(
-        joinAlbumArtistQuery,
-        artistAlbumValues
-      );
+      const artistAlbumValues = [id, newAlbumID];
+      const artistAlbumResults = await connection.execute(joinAlbumArtistQuery, artistAlbumValues);
     }
   }
   if (newTracks) {
     const newTrack = await addNewTracks(newTracks);
-    console.log(newTrack);
-    trackIDs.push(...newTrack);
+    // console.log(newTrack);
+
+    const newIds = [];
+    newTrack.forEach((track) => newIds.push(track.id));
+    // console.log("NEW IDS:", newIds);
+    trackIDs.push(...newIds);
+    // console.log("TRACK IDS:", trackIDs);
+    addTrackToArtist(newTrack);
   }
   if (trackIDs) {
     for (const trackID of trackIDs) {
@@ -216,14 +222,14 @@ albumsRouter.post("/completeAlbum", async (request, response) => {
   response.json({ message: "New album created" });
 });
 
-async function addNewArtists(artist) {
+async function addNewArtists(artists) {
   const array = [];
-  for (const newArtist of artist) {
+  for (const newArtist of artists) {
     const artistQuery = /*sql*/ `
     INSERT INTO artists (name, birthdate)
     VALUES (?, ?)
     `;
-    const artistValues = (newArtist.name, newArtist.birthdate);
+    const artistValues = [newArtist.name, newArtist.birthdate];
     const [artistResults] = await connection.execute(artistQuery, artistValues);
     const newArtistId = artistResults.insertId;
     array.push(newArtistId);
@@ -238,13 +244,25 @@ async function addNewTracks(track) {
     INSERT INTO tracks (title, durationSeconds)
     VALUES (?, ?)
     `;
-    const trackValues = (newTrack.title, newTrack.durationSeconds);
+    const trackValues = [newTrack.title, newTrack.durationSeconds];
     const [trackResults] = await connection.execute(trackQuery, trackValues);
     const newTrackId = trackResults.insertId;
-    array.push(newTrackId);
+    newTrack.id = newTrackId;
+    array.push(newTrack);
   }
-
+  console.log("ADD NEW TRACK ARRAY:", array);
   return array;
+}
+
+async function addTrackToArtist(trackIDs) {
+  for (const newTrack of trackIDs) {
+    const trackQuery = /* sql */ `
+      INSERT INTO artists_tracks (artist_id, track_id)
+         VALUES (?, ?)
+    `;
+    const trackValues = [newTrack.artistId, newTrack.id];
+    const [trackResults] = await connection.execute(trackQuery, trackValues);
+  }
 }
 
 export default albumsRouter;
