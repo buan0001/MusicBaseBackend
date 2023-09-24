@@ -1,12 +1,12 @@
 import connection from "./database.js";
 
-async function tryExcecute(query, values) {
+async function tryExecute(query, values) {
   try {
     const [results] = await connection.execute(query, values);
     return results;
-  } catch (err) {
-    return err;
+  } catch (error) {
+    return error;
   }
 }
 
-export { tryExcecute };
+export { tryExecute };
