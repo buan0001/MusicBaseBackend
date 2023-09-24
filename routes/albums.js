@@ -151,3 +151,54 @@ albumsRouter.put("/:id", async (request, response) => {
 });
 
 export default albumsRouter;
+albumsRouter.post("/completeAlbum", async (request, response) => {
+  // to use this in postman, you have to use this json blueprint:
+  // {
+//   "trackids": [xx, xx, xx, xx, xx],
+//   "title": "XXX",
+//   "releaseYear": "XXXX",
+//   "artistId": "X"
+// // }
+
+  console.log("complete album posted");
+
+  const album = request.body;
+  const albumQuery = /*sql*/ `
+     -- creates album
+     INSERT INTO albums (title, releaseYear)
+     VALUES (?, ?)
+    `;
+  const albumValues = [album.title, album.releaseYear];
+  const [albumResults] = await connection.execute(albumQuery, albumValues);
+
+  const trackIDs = request.body.trackids
+  const newAlbumID = albumResults.insertId;
+
+  for (const trackID of trackIDs) {
+    const joinAlbumTrackQuery = /*sql*/ `
+    INSERT INTO albums_tracks (albums_id, track_id)
+    VALUES (?, ?)
+    `;
+    
+    const albumTrackValues = [newAlbumID, trackID];
+
+    const [trackResults] = await connection.execute(joinAlbumTrackQuery, albumTrackValues);
+    
+  }
+  
+  const joinAlbumArtistQuery = /*sql*/ `
+     -- opret join mellem album og artist
+     INSERT INTO artists_albums (artist_id, album_id)
+     VALUES (?, ?)
+    `;
+  const artistAlbumValues = [album.artistId, newAlbumID];
+
+  const artistAlbumResults = await connection.execute(
+    joinAlbumArtistQuery,
+    artistAlbumValues
+  );
+
+  response.json({ message: "New album created" });
+});
+
+export default albumsRouter;
