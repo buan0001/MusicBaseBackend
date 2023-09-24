@@ -27,7 +27,7 @@ artistsRouter.get("/search", async (request, response) => {
     ORDER BY name`;
   const values = [`%${searchString}%`];
   // const [results] = await connection.execute(query, values);
-  response.json(await tryExecute(query, values));
+  response.json({ artists: await tryExecute(query, values) });
   // response.json(results);
 });
 

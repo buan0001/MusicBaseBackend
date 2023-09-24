@@ -44,7 +44,7 @@ ORDER BY tracks.title;
 
   const values = [`%${query}%`];
 
-  response.json({ tracks: await tryExcecute(queryString, values) });
+  response.json({ tracks: await tryExecute(queryString, values) });
 });
 
 // Get a single track

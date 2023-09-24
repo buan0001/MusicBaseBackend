@@ -42,7 +42,7 @@ albumsRouter.get("/search", async (request, response) => {
 
   const values = [`%${query}%`];
   console.log(queryString);
-  response.json({ albums: await tryExcecute(queryString, values) });
+  response.json({ albums: await tryExecute(queryString, values) });
 });
 
 albumsRouter.get("/search/:artistId", async (request, response) => {
@@ -59,7 +59,7 @@ albumsRouter.get("/search/:artistId", async (request, response) => {
     ORDER BY artistName;
     `;
   const values = [request.params.artistId];
-  response.json(await tryExcecute(queryString, values));
+  response.json(await tryExecute(queryString, values));
 });
 
 albumsRouter.get("/:id", async (request, response) => {
@@ -90,7 +90,8 @@ albumsRouter.get("/:id", async (request, response) => {
 
   const values = [id];
 
-  response.json(await tryExecute(query, values));
+  // response.json(await tryExecute(query, values));
+  const [results] = await connection.execute(query, values);
   // console.log("album med id results ", results);
 
   if (results[0]) {
