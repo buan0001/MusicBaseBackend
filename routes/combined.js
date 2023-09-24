@@ -1,25 +1,24 @@
 import { Router } from "express";
 import connection from "../database.js";
-import { tryExcecute } from "../helpers.js";
+import { tryExecute as tryExecute } from "../helpers.js";
 
 const combinedRouter = Router();
 
-combinedRouter.get("/", async (req, res) => {
+combinedRouter.get("/", async (request, response) => {
   const artistString = /*sql*/ `SELECT  * FROM artist;`;
 
   const trackString = /*sql*/ `SELECT  * FROM tracks;`;
 
-  const albumString = /*sql*/ ` SELECT  * FROM albums;`;
+  const albumString = /*sql*/ `SELECT  * FROM albums;`;
 
-  const artists = await tryExcecute(artistString);
-  const tracks = await tryExcecute(trackString);
-  const albums = await tryExcecute(albumString);
-  res.json({"artists":artists, "tracks":tracks, "albums":albums});
+  const artists = await tryExecute(artistString);
+  const tracks = await tryExecute(trackString);
+  const albums = await tryExecute(albumString);
+  response.json({ artists: artists, tracks: tracks, albums: albums });
 });
 
-
-combinedRouter.get("/search", async (req, res) => {
-  const query = req.query.q;
+combinedRouter.get("/search", async (request, response) => {
+  const query = request.query.q;
   console.log(query);
 
   // SELECT  artists.id, artists.name, artists.birthdate as time FROM artists
@@ -37,10 +36,10 @@ combinedRouter.get("/search", async (req, res) => {
           ORDER by title;`;
 
   const values = [`%${query}%`];
-  const artists = await tryExcecute(artistString, values);
-  const tracks = await tryExcecute(trackString, values);
-  const albums = await tryExcecute(albumString, values);
-  res.json({"artists":artists, "tracks":tracks, "albums":albums});
+  const artists = await tryExecute(artistString, values);
+  const tracks = await tryExecute(trackString, values);
+  const albums = await tryExecute(albumString, values);
+  response.json({ artists: artists, tracks: tracks, albums: albums });
 });
 
 export default combinedRouter;

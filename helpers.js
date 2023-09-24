@@ -4,9 +4,9 @@ async function tryExecute(query, values) {
   try {
     const [results] = await connection.execute(query, values);
     return results;
-  } catch (err) {
-    return err;
+  } catch (error) {
+    return error;
   }
 }
 
-export { tryExecute as tryExcecute };
+export { tryExecute as tryExecute };
