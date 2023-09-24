@@ -8,15 +8,22 @@ Det er også muligt som bruger, at tilføje nye kunstnere, albums og tracks, sam
 
 ## Installation
 
-Installationsguide her
+0. Sørg for at have node.js installeret og opdateret
+1. Stå i backend mappen, åbn terminalen og skriv
+```bash
+npm install
+```
+2. Skriv nu
 
 ```bash
-installationsguide her når den er færdig
+npm start
 ```
+3. Node er nu oppe at køre og kan enten tilsluttes via den online frontend eller en lokal udgave af frontenden
 
 ## Brug
 
-Brugerguide her
+1. De fleste GETS og /search routes kan bruges direkte igennem frontend.
+2. De resterende routes skal i øjeblikket testes igennem postman
 
 ## Lavet af
 
