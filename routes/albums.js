@@ -141,19 +141,20 @@ albumsRouter.put("/:id", async (request, response) => {
 });
 
 albumsRouter.post("/completeAlbum", async (request, response) => {
-  // to use this in postman, you have to use this json blueprint,
-  // note that "trackids" should only be used if you want to add existing tracks, and the same for "artistId". If you want to create new tracks and/or artist(s) you can use "newTracks" and or "newArtists":
+  // To use this in postman, you have to use this json blueprint,
+  // Note that "trackids" should only be used if you want to add existing tracks, and the same for "artistId".
+  // If you want to create new tracks and/or artist(s) you can use "newTracks" and or "newArtists":
   // {
   //   "trackids": [int, int, int,...],
   //   "title": "varchar",
   //   "releaseYear": "int",
   //   "artistId": [int, int, int],
-  //   "newTracks": [
+  //   *OPTIONAL*: "newTracks": [
   //     {"title": "varchar", "durationSeconds": int, "artistId":int},
   //     {"title": "varchar", "durationSeconds": int, "artistId":int},
   //     {"title": "varchar", "durationSeconds": int, "artistId":int}
   //   ],
-  //   "newArtists": [
+  //   *OPTIONAL*: "newArtists": [
   //     {"title": "varchar", "birthdate": yy-mm-dd},
   //     {"title": "varchar", "birthdate": yy-mm-dd}
   //   ]
