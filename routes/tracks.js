@@ -6,20 +6,36 @@ const tracksRouter = Router();
 
 // Get all tracks
 tracksRouter.get("/", async (request, response) => {
-  const query =
+  const queryString =
     /*sql*/
     `
     SELECT DISTINCT tracks.*,
-       artists.name as artistName,
-       artists.id as artistId
-    FROM tracks
-    INNER JOIN artists_tracks ON tracks.id = artists_tracks.track_id
-    INNER JOIN artists ON artists_tracks.artist_id = artists.id
-    ORDER BY artists.id ASC;
+    artists.name as artistName,
+    artists.id as artistID,
+    albums.title as albumTitle,
+    albums.id as albumID
+FROM tracks
+INNER JOIN artists_tracks ON tracks.id = artists_tracks.track_id
+INNER JOIN artists ON artists_tracks.artist_id = artists.id
+INNER JOIN albums_tracks ON tracks.id = albums_tracks.track_id
+INNER JOIN albums ON albums_tracks.albums_id = albums.id
+
+ORDER BY tracks.title;
     `;
 
-  //   const [results] = await connection.execute(query);
-  response.json(await tryExecute(query));
+  response.json(await tryExecute(queryString));
+  // const query =
+  //   /*sql*/
+  //   `
+  //   SELECT DISTINCT tracks.*,
+  //      artists.name as artistName,
+  //      artists.id as artistId
+  //   FROM tracks
+  //   INNER JOIN artists_tracks ON tracks.id = artists_tracks.track_id
+  //   INNER JOIN artists ON artists_tracks.artist_id = artists.id
+  //   ORDER BY artists.id ASC;
+  //   `;
+  // response.json(await tryExecute(query));
 });
 
 // Search after track title
@@ -44,7 +60,7 @@ ORDER BY tracks.title;
 
   const values = [`%${query}%`];
 
-  response.json({ tracks: await tryExecute(queryString, values) });
+  response.json(await tryExecute(queryString, values));
 });
 
 // Get a single track
@@ -94,6 +110,7 @@ tracksRouter.post("/", async (request, response) => {
       `;
 
     // Assuming track.artistIds is an array of artist IDs
+    // if (track.artistIds)
     for (const artistId of track.artistIds) {
       const artistTrackValues = [artistId, newTrackId];
       await connection.execute(artistTrackQuery, artistTrackValues);

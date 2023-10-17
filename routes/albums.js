@@ -50,13 +50,14 @@ albumsRouter.get("/search/:artistId", async (request, response) => {
   const queryString = /*sql*/ `
    -- se albums med artist navn UDEN tracks
     SELECT DISTINCT albums.*,
-      artists.name as artistName,
+      artists.name,
+      artists.birthdate as birthdate,
       artists.id as artistId
     FROM albums
-    JOIN artists_albums ON albums.id = artists_albums.album_id
-    JOIN artists ON artists_albums.artist_id = artists.id
+    left JOIN artists_albums ON albums.id = artists_albums.album_id
+    left JOIN artists ON artists_albums.artist_id = artists.id
     WHERE artists.id = ?
-    ORDER BY artistName;
+    ORDER BY artists.name;
     `;
   const values = [request.params.artistId];
   response.json(await tryExecute(queryString, values));
