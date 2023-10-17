@@ -54,8 +54,8 @@ albumsRouter.get("/search/:artistId", async (request, response) => {
       artists.birthdate as birthdate,
       artists.id as artistId
     FROM albums
-    left JOIN artists_albums ON albums.id = artists_albums.album_id
-    left JOIN artists ON artists_albums.artist_id = artists.id
+    JOIN artists_albums ON albums.id = artists_albums.album_id
+    JOIN artists ON artists_albums.artist_id = artists.id
     WHERE artists.id = ?
     ORDER BY artists.name;
     `;
@@ -134,7 +134,7 @@ albumsRouter.post("/", async (request, response) => {
     `;
 
   const albumValues = [album.title, album.releaseYear];
-  response.json(await tryExecute(query, albumValues));
+  const results = await tryExecute(query, albumValues)
 
   const newAlbumId = results.insertId;
 
