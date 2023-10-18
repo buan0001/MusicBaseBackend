@@ -47,10 +47,10 @@ CREATE TABLE artists_tracks(
 
 CREATE TABLE albums_tracks(
     id INT primary key auto_increment,
-    albums_id INT,
+    album_id INT,
     track_id INT,
     FOREIGN KEY (track_id) REFERENCES tracks(id),
-    FOREIGN KEY (albums_id) REFERENCES albums(id)
+    FOREIGN KEY (album_id) REFERENCES albums(id)
 );
 
 CREATE TABLE artists_albums(
@@ -1589,7 +1589,7 @@ VALUES
 (6, 44),
 (6, 45);
 
-INSERT INTO albums_tracks (albums_id, track_id)
+INSERT INTO albums_tracks (album_id, track_id)
 VALUES 
 -- Eminem
 -- Infinite (1996): 8 tracks -- ID #1
@@ -2286,7 +2286,7 @@ JOIN artists_tracks ON artists.id = artists_tracks.artist_id
 JOIN tracks ON artists_tracks.track_id = tracks.id;
 
 SELECT albums.*, tracks.title as trackTitle, tracks.durationSeconds as trackDuration FROM albums
-JOIN albums_tracks ON albums.id = albums_tracks.albums_id
+JOIN albums_tracks ON albums.id = albums_tracks.album_id
 JOIN tracks ON albums_tracks.track_id = tracks.id;
 
 /*

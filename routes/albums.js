@@ -1,6 +1,6 @@
 import { Router } from "express";
 import connection from "../database.js";
-import { tryExecute } from "../helpers.js";
+import { tryExecute, deleteJunctionEntries } from "../helpers.js";
 
 const albumsRouter = Router();
 
@@ -57,7 +57,7 @@ albumsRouter.get("/search/:artistId", async (request, response) => {
     JOIN artists_albums ON albums.id = artists_albums.album_id
     JOIN artists ON artists_albums.artist_id = artists.id
     WHERE artists.id = ?
-    ORDER BY artists.name;
+    ORDER BY artists.name;  
     `;
   const values = [request.params.artistId];
   response.json(await tryExecute(queryString, values));
@@ -81,7 +81,7 @@ albumsRouter.get("/:id", async (request, response) => {
             artists.name as artistName,
             artists.id as artistId
         FROM albums
-        LEFT JOIN albums_tracks ON albums.id = albums_tracks.albums_id
+        LEFT JOIN albums_tracks ON albums.id = albums_tracks.album_id
         LEFT JOIN tracks ON albums_tracks.track_id = tracks.id
         LEFT JOIN artists_albums ON albums.id = artists_albums.album_id
         LEFT JOIN artists ON artists_albums.artist_id = artists.id
@@ -95,7 +95,7 @@ albumsRouter.get("/:id", async (request, response) => {
   const [results] = await connection.execute(query, values);
   // console.log("album med id results ", results);
 
-  if (results[0]) {
+  if (results) {
     const album = results[0];
     const albumWithSongs = {
       id: album.id,
@@ -113,7 +113,7 @@ albumsRouter.get("/:id", async (request, response) => {
           };
         }),
     };
-
+    console.log("RESULTS", results);
     response.json(albumWithSongs);
   } else {
     response.json({ message: "No album found" });
@@ -134,7 +134,7 @@ albumsRouter.post("/", async (request, response) => {
     `;
 
   const albumValues = [album.title, album.releaseYear];
-  const results = await tryExecute(query, albumValues)
+  const results = await tryExecute(query, albumValues);
 
   const newAlbumId = results.insertId;
 
@@ -145,10 +145,11 @@ albumsRouter.post("/", async (request, response) => {
      INSERT INTO artists_albums (artist_id, album_id)
      VALUES (?, ?)
     `;
+    for (const artist of album.artistIds) {
+        const artistAlbumValues = [artist, newAlbumId];
+        await connection.execute(joinAlbumArtistQuery, artistAlbumValues);
+    }
 
-  const artistAlbumValues = [album.artistId, newAlbumId];
-
-  await connection.execute(joinAlbumArtistQuery, artistAlbumValues);
 
   response.json({ message: "New album created" });
 });
@@ -232,7 +233,7 @@ albumsRouter.post("/completeAlbum", async (request, response) => {
   if (trackIDs) {
     for (const trackID of trackIDs) {
       const joinAlbumTrackQuery = /*sql*/ `
-    INSERT INTO albums_tracks (albums_id, track_id)
+    INSERT INTO albums_tracks (album_id, track_id)
     VALUES (?, ?)
     `;
 
@@ -243,6 +244,16 @@ albumsRouter.post("/completeAlbum", async (request, response) => {
   }
 
   response.json({ message: "New album created" });
+});
+
+albumsRouter.delete("/:id", async (request, response) => {
+  const id = request.params.id; // Takes ID from the URL
+  const values = [id];
+
+  await deleteJunctionEntries("album", id);
+
+  const deleteAlbum = `DELETE from albums WHERE album_id = ?`;
+  response.json(await tryExecute(deleteAlbum, values));
 });
 
 async function addNewArtists(artists) {

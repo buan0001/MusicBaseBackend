@@ -1,6 +1,6 @@
 import { Router, response } from "express";
 import connection from "../database.js";
-import { tryExecute } from "../helpers.js";
+import { tryExecute, deleteJunctionEntries } from "../helpers.js";
 
 const tracksRouter = Router();
 
@@ -18,7 +18,7 @@ FROM tracks
 INNER JOIN artists_tracks ON tracks.id = artists_tracks.track_id
 INNER JOIN artists ON artists_tracks.artist_id = artists.id
 INNER JOIN albums_tracks ON tracks.id = albums_tracks.track_id
-INNER JOIN albums ON albums_tracks.albums_id = albums.id
+INNER JOIN albums ON albums_tracks.album_id = albums.id
 
 ORDER BY tracks.title;
     `;
@@ -53,7 +53,7 @@ FROM tracks
 INNER JOIN artists_tracks ON tracks.id = artists_tracks.track_id
 INNER JOIN artists ON artists_tracks.artist_id = artists.id
 INNER JOIN albums_tracks ON tracks.id = albums_tracks.track_id
-INNER JOIN albums ON albums_tracks.albums_id = albums.id
+INNER JOIN albums ON albums_tracks.album_id = albums.id
 WHERE tracks.title LIKE ?
 ORDER BY tracks.title;
     `;
@@ -78,7 +78,7 @@ tracksRouter.get("/:id", async (request, response) => {
             INNER JOIN artists_tracks ON tracks.id = artists_tracks.track_id
             INNER JOIN artists ON artists_tracks.artist_id = artists.id
             INNER JOIN albums_tracks ON tracks.id = albums_tracks.track_id
-            INNER JOIN albums ON albums_tracks.albums_id = albums.id
+            INNER JOIN albums ON albums_tracks.album_id = albums.id
             WHERE tracks.id = ?;
     `;
 
@@ -120,7 +120,7 @@ tracksRouter.post("/", async (request, response) => {
     const albumTrackQuery =
       /* sql */
       `
-      INSERT INTO albums_tracks (albums_id, track_id) VALUES (?, ?)
+      INSERT INTO albums_tracks (album_id, track_id) VALUES (?, ?)
       `;
 
     // Assuming track.albumIds is an array of album IDs
@@ -135,6 +135,16 @@ tracksRouter.post("/", async (request, response) => {
     console.error("Error:", error);
     response.status(500).json({ error: "Internal Server Error" });
   }
+});
+
+tracksRouter.delete("/:id", async (request, response) => {
+  const id = request.params.id; // Takes ID from the URL
+  const values = [id];
+
+  await deleteJunctionEntries("track", id);
+
+  const deleteTrack = `DELETE from tracks WHERE track_id = ?`;
+  response.json(await tryExecute(deleteTrack, values));
 });
 
 // Updates a track
