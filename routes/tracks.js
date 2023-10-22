@@ -1,25 +1,41 @@
 import { Router, response } from "express";
 import connection from "../database.js";
-import { tryExecute } from "../helpers.js";
+import { tryExecute, deleteJunctionEntries } from "../helpers.js";
 
 const tracksRouter = Router();
 
 // Get all tracks
 tracksRouter.get("/", async (request, response) => {
-  const query =
+  const queryString =
     /*sql*/
     `
     SELECT DISTINCT tracks.*,
-       artists.name as artistName,
-       artists.id as artistId
-    FROM tracks
-    INNER JOIN artists_tracks ON tracks.id = artists_tracks.track_id
-    INNER JOIN artists ON artists_tracks.artist_id = artists.id
-    ORDER BY artists.id ASC;
+    artists.name as artistName,
+    artists.id as artistID,
+    albums.title as albumTitle,
+    albums.id as albumID
+FROM tracks
+INNER JOIN artists_tracks ON tracks.id = artists_tracks.track_id
+INNER JOIN artists ON artists_tracks.artist_id = artists.id
+INNER JOIN albums_tracks ON tracks.id = albums_tracks.track_id
+INNER JOIN albums ON albums_tracks.album_id = albums.id
+
+ORDER BY tracks.title;
     `;
 
-  //   const [results] = await connection.execute(query);
-  response.json(await tryExecute(query));
+  response.json(await tryExecute(queryString));
+  // const query =
+  //   /*sql*/
+  //   `
+  //   SELECT DISTINCT tracks.*,
+  //      artists.name as artistName,
+  //      artists.id as artistId
+  //   FROM tracks
+  //   INNER JOIN artists_tracks ON tracks.id = artists_tracks.track_id
+  //   INNER JOIN artists ON artists_tracks.artist_id = artists.id
+  //   ORDER BY artists.id ASC;
+  //   `;
+  // response.json(await tryExecute(query));
 });
 
 // Search after track title
@@ -37,14 +53,14 @@ FROM tracks
 INNER JOIN artists_tracks ON tracks.id = artists_tracks.track_id
 INNER JOIN artists ON artists_tracks.artist_id = artists.id
 INNER JOIN albums_tracks ON tracks.id = albums_tracks.track_id
-INNER JOIN albums ON albums_tracks.albums_id = albums.id
+INNER JOIN albums ON albums_tracks.album_id = albums.id
 WHERE tracks.title LIKE ?
 ORDER BY tracks.title;
     `;
 
   const values = [`%${query}%`];
 
-  response.json({ tracks: await tryExecute(queryString, values) });
+  response.json(await tryExecute(queryString, values));
 });
 
 // Get a single track
@@ -62,7 +78,7 @@ tracksRouter.get("/:id", async (request, response) => {
             INNER JOIN artists_tracks ON tracks.id = artists_tracks.track_id
             INNER JOIN artists ON artists_tracks.artist_id = artists.id
             INNER JOIN albums_tracks ON tracks.id = albums_tracks.track_id
-            INNER JOIN albums ON albums_tracks.albums_id = albums.id
+            INNER JOIN albums ON albums_tracks.album_id = albums.id
             WHERE tracks.id = ?;
     `;
 
@@ -94,6 +110,7 @@ tracksRouter.post("/", async (request, response) => {
       `;
 
     // Assuming track.artistIds is an array of artist IDs
+    // if (track.artistIds)
     for (const artistId of track.artistIds) {
       const artistTrackValues = [artistId, newTrackId];
       await connection.execute(artistTrackQuery, artistTrackValues);
@@ -103,7 +120,7 @@ tracksRouter.post("/", async (request, response) => {
     const albumTrackQuery =
       /* sql */
       `
-      INSERT INTO albums_tracks (albums_id, track_id) VALUES (?, ?)
+      INSERT INTO albums_tracks (album_id, track_id) VALUES (?, ?)
       `;
 
     // Assuming track.albumIds is an array of album IDs
@@ -118,6 +135,16 @@ tracksRouter.post("/", async (request, response) => {
     console.error("Error:", error);
     response.status(500).json({ error: "Internal Server Error" });
   }
+});
+
+tracksRouter.delete("/:id", async (request, response) => {
+  const id = request.params.id; // Takes ID from the URL
+  const values = [id];
+
+  await deleteJunctionEntries("track", id);
+
+  const deleteTrack = `DELETE from tracks WHERE track_id = ?`;
+  response.json(await tryExecute(deleteTrack, values));
 });
 
 // Updates a track

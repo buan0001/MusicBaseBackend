@@ -1,6 +1,6 @@
 import { Router } from "express";
 import connection from "../database.js";
-import { tryExecute as tryExecute } from "../helpers.js";
+import { tryExecute as tryExecute, deleteJunctionEntries } from "../helpers.js";
 
 const artistsRouter = Router();
 
@@ -50,6 +50,7 @@ artistsRouter.get("/:id", async (request, response) => {
 
 // CREATE artist
 artistsRouter.post("/", async (request, response) => {
+  console.log("CREATE ARTIST");
   const artist = request.body;
   const query = "INSERT INTO artists (name, birthdate) VALUES (?, ?)";
   const values = [artist.name, artist.birthdate];
@@ -67,13 +68,18 @@ artistsRouter.put("/:id", async (request, response) => {
 
 // DELETE artist
 artistsRouter.delete("/:id", async (request, response) => {
+  console.log("DELETE ARTIST");
   // DELETES EVERYTHING ASSOCIATED TO THIS ARTIST. USE WITH CAUTION!
 
   const id = request.params.id; // Takes ID from the URL
   const values = [id];
   try {
     // Delete all junction entries - need to do this first to get rid of dependencies
-    await deleteJunctionEntries(values);
+    await deleteJunctionEntries("artist", id);
+
+
+    const albumsTracksDelete = `DELETE from albums_tracks WHERE album_id NOT IN (SELECT album_id FROM artists_albums)`;
+    await connection.execute(albumsTracksDelete);
 
     // Then the artist
     const artistQuery = `DELETE from artists WHERE id = ?`;
@@ -90,18 +96,5 @@ artistsRouter.delete("/:id", async (request, response) => {
   }
 });
 
-async function deleteJunctionEntries(values) {
-  const artistsTracksDelete = `DELETE from artists_tracks WHERE artist_id = ?`;
-  await connection.execute(artistsTracksDelete, values);
-
-  const artistsAlbumsDelete = `DELETE from artists_albums WHERE artist_id = ?`;
-  await connection.execute(artistsAlbumsDelete, values);
-
-  // Since artist_id isn't in this table, we can instead look for album_id
-  // In the second delete we delete BOTH the artist_id and the album_id
-  // We can use this to look for entries where albums_tracks.album_id has no match in artists_albums.album_id
-  const albumsTracksDelete = `DELETE from albums_tracks WHERE album_id NOT IN (SELECT album_id FROM artists_albums)`;
-  await connection.execute(albumsTracksDelete);
-}
 
 export default artistsRouter;
