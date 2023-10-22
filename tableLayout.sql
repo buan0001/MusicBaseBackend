@@ -1876,7 +1876,7 @@ VALUES
 (17, 245),
 (17, 246),
 
---Living Things (2012): 12 tracks -- ID #18
+-- Living Things (2012): 12 tracks -- ID #18
 (18, 247),
 (18, 248),
 (18, 249),
