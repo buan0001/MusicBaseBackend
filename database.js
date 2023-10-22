@@ -12,9 +12,9 @@ const dbConfig = {
   multipleStatements: true,
 };
 
-if (process.env.MYSQL_CERT) {
-  dbConfig.ssl = { ca: fs.readFileSync("DigiCertGlobalRootCA.crt.pem") };
-}
+// if (process.env.MYSQL_CERT) {
+//   dbConfig.ssl = { ca: fs.readFileSync("DigiCertGlobalRootCA.crt.pem") };
+// }
 
 const connection = await mysql.createConnection(dbConfig);
 
