@@ -4,6 +4,23 @@ import { tryExecute, deleteJunctionEntries } from "../helpers.js";
 
 const tracksRouter = Router();
 
+tracksRouter.get("/page", async (request, response) => {
+  const pageNum = Number(request.query.page);
+  const limit = Number(request.query.limit);
+  const offset = (pageNum - 1) * limit;
+  const values = [limit, offset];
+  let queryString
+  if (!isNaN(limit) && !isNaN(offset)) {
+     queryString = `SELECT * from tracks ORDER BY title LIMIT ? OFFSET ?
+     ;`;
+  } else {
+     queryString = `SELECT * from tracks ORDER BY tracks.title;`;
+  }
+  const [results] = await connection.query(queryString, values);
+  console.log(results);
+  response.json(results);
+});
+
 // Get all tracks
 tracksRouter.get("/", async (request, response) => {
   const queryString =
@@ -19,11 +36,9 @@ INNER JOIN artists_tracks ON tracks.id = artists_tracks.track_id
 INNER JOIN artists ON artists_tracks.artist_id = artists.id
 INNER JOIN albums_tracks ON tracks.id = albums_tracks.track_id
 INNER JOIN albums ON albums_tracks.album_id = albums.id
+ORDER BY tracks.title;`;
 
-ORDER BY tracks.title;
-    `;
-
-  response.json(await tryExecute(queryString));
+  // response.json(await tryExecute(queryString, values));
   // const query =
   //   /*sql*/
   //   `
@@ -35,7 +50,7 @@ ORDER BY tracks.title;
   //   INNER JOIN artists ON artists_tracks.artist_id = artists.id
   //   ORDER BY artists.id ASC;
   //   `;
-  // response.json(await tryExecute(query));
+  response.json(await tryExecute(query));
 });
 
 // Search after track title
